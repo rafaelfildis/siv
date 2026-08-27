@@ -12,6 +12,9 @@ const CORES_CANDIDATO: Record<string, string> = {
   "Jorge Solla": "#1A5FCB",
   "Lucas Reis": "#9A5308",
   "Não sei": "#98A2B3",
+  // "OUTROS" e "Não sei" são ambos ausência de escolha nominal: neutros, e
+  // distintos entre si para não colapsarem numa barra só.
+  OUTROS: "#5B6472",
 };
 const corDe = (c: string) => CORES_CANDIDATO[c] ?? "#5B6472";
 

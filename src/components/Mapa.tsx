@@ -146,7 +146,10 @@ export default function Mapa({
         <svg
           ref={svgRef}
           viewBox={`0 0 ${W} ${H}`}
-          preserveAspectRatio="xMidYMid meet"
+          // Ancorado ao topo, não centralizado: o cartão estica para
+          // acompanhar a coluna lateral, e centralizar empurraria o mapa para
+          // fora da primeira dobra sempre que o diagnóstico crescesse.
+          preserveAspectRatio="xMidYMin meet"
           className="h-full w-full"
           role="img"
           aria-label={`Mapa da Bahia por ${conf.rotulo.toLowerCase()}`}

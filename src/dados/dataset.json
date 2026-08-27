@@ -1,42 +1,50 @@
 {
-  "geradoEm": "2026-08-27T19:34:18.653Z",
+  "geradoEm": "2026-08-27T19:59:33.964Z",
   "fonte": "MAPEAMENTO.xlsx",
-  "sha256": "e2c0b4927d8eb4359e7c9c48aa9912b712e3b0b6b045c858cc94173f2a2bcce4",
+  "sha256": "711dc538cdf9fc18ed8fab0093a0fdb4e14669d508f1811b5fb6561c0f8557d6",
   "limiarSupressao": 3,
   "totais": {
     "equipe": 262,
     "respostas": {
-      "estadual": 24,
-      "federal": 21
+      "estadual": 41,
+      "federal": 36
     },
     "cobertura": {
-      "estadual": 0.0916030534351145,
-      "federal": 0.08015267175572519
+      "estadual": 0.15648854961832062,
+      "federal": 0.13740458015267176
     }
   },
   "candidatos": {
     "estadual": [
       {
         "candidato": "Fabíola Mansur",
-        "qtd": 23
+        "qtd": 33
       },
       {
         "candidato": "Não sei",
-        "qtd": 1
+        "qtd": 4
+      },
+      {
+        "candidato": "OUTROS",
+        "qtd": 4
       }
     ],
     "federal": [
       {
         "candidato": "Lucas Reis",
-        "qtd": 11
+        "qtd": 15
       },
       {
         "candidato": "Jorge Solla",
-        "qtd": 9
+        "qtd": 14
       },
       {
         "candidato": "Não sei",
-        "qtd": 1
+        "qtd": 4
+      },
+      {
+        "candidato": "OUTROS",
+        "qtd": 3
       }
     ]
   },
@@ -44,30 +52,42 @@
     {
       "codIbge": 2927408,
       "nome": "Salvador",
-      "equipe": 116,
+      "equipe": 187,
       "respostas": {
-        "estadual": 19,
-        "federal": 16
+        "estadual": 34,
+        "federal": 29
       },
       "intencoes": {
         "estadual": [
           {
             "candidato": "Fabíola Mansur",
-            "qtd": 19
+            "qtd": 27
+          },
+          {
+            "candidato": "Não sei",
+            "qtd": 4
+          },
+          {
+            "candidato": "OUTROS",
+            "qtd": 3
           }
         ],
         "federal": [
           {
             "candidato": "Jorge Solla",
-            "qtd": 9
+            "qtd": 13
           },
           {
             "candidato": "Lucas Reis",
-            "qtd": 6
+            "qtd": 10
           },
           {
             "candidato": "Não sei",
-            "qtd": 1
+            "qtd": 4
+          },
+          {
+            "candidato": "OUTROS",
+            "qtd": 2
           }
         ]
       },
@@ -279,10 +299,10 @@
     }
   ],
   "semMunicipio": {
-    "equipe": 102,
+    "equipe": 31,
     "respostas": {
-      "estadual": 1,
-      "federal": 1
+      "estadual": 3,
+      "federal": 3
     }
   }
 }

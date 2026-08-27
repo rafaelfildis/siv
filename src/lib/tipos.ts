@@ -12,11 +12,18 @@ export const ROTULO_CARGO: Record<Cargo, string> = {
 };
 
 /**
- * Rótulo reservado para quem foi abordado mas não declarou preferência.
- * É contabilizado como resposta (entra no denominador de cobertura),
- * mas não é candidato.
+ * Rótulos de resposta que não são candidatos nominais.
+ *
+ * Contam como resposta — entram na cobertura e no denominador dos
+ * percentuais, exatamente como a aba "Painel" da planilha os conta — mas
+ * não representam intenção por uma pessoa específica.
  */
 export const NAO_SEI = "Não sei";
+export const OUTROS = "OUTROS";
+export const RESPOSTAS_NAO_NOMINAIS: readonly string[] = [NAO_SEI, OUTROS];
+
+export const ehCandidatoNominal = (rotulo: string) =>
+  !RESPOSTAS_NAO_NOMINAIS.includes(rotulo);
 
 /**
  * Linha bruta da aba "Mapeamento", antes de qualquer tratamento.

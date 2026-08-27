@@ -31,8 +31,14 @@ const CAMINHO_DATASET = path.join(DIR_DADOS, "dataset.json");
 const CAMINHO_LOG = path.join(DIR_DADOS, "importacoes.json");
 const CAMINHO_MALHA = path.join(DIR_DADOS, "malha-ba.json");
 
-/** A aba de dados e onde os dados de fato começam. */
-const ABA = "Mapeamento";
+/**
+ * A aba de dados é resolvida por prefixo, não por nome exato.
+ *
+ * A aba já foi renomeada uma vez ("Mapeamento" -> "Mapeamento SD") e a
+ * validação abortou a importação, como deveria. Casar pelo prefixo absorve
+ * o sufixo sem abrir mão do erro alto quando nenhuma aba corresponde.
+ */
+const PREFIXO_ABA = "Mapeamento";
 const LINHA_CABECALHO = 4;
 const PRIMEIRA_LINHA = 5;
 
@@ -94,12 +100,11 @@ export async function lerPlanilha(buffer: Buffer): Promise<{
 }> {
   const wb = new ExcelJS.Workbook();
   await wb.xlsx.load(buffer as unknown as ArrayBuffer);
-  const ws = wb.getWorksheet(ABA);
+  const ws = wb.worksheets.find((w) => w.name.trim().startsWith(PREFIXO_ABA));
   if (!ws) {
     throw new Error(
-      `aba "${ABA}" não encontrada. Abas presentes: ${wb.worksheets
-        .map((w) => w.name)
-        .join(", ")}`,
+      `nenhuma aba começando por "${PREFIXO_ABA}" foi encontrada. ` +
+        `Abas presentes: ${wb.worksheets.map((w) => w.name).join(", ")}`,
     );
   }
 
@@ -118,6 +123,9 @@ export async function lerPlanilha(buffer: Buffer): Promise<{
 
   const linhas: LinhaBruta[] = [];
   const avisos: string[] = [];
+  if (ws.name.trim() !== PREFIXO_ABA) {
+    avisos.push(`Aba lida: "${ws.name}" (casada pelo prefixo "${PREFIXO_ABA}").`);
+  }
   let lidas = 0;
   let ancoras = 0;
   let rejeitadas = 0;

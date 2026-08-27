@@ -103,8 +103,29 @@ describe("lerPlanilha", () => {
     await expect(lerPlanilha(buffer)).rejects.toThrow(/cabeçalho divergente/i);
   });
 
-  it("aborta quando a aba esperada não existe", async () => {
+  it("aborta quando nenhuma aba começa por 'Mapeamento'", async () => {
     const buffer = await planilhaDeTeste([], { aba: "Outra" });
-    await expect(lerPlanilha(buffer)).rejects.toThrow(/não encontrada/i);
+    await expect(lerPlanilha(buffer)).rejects.toThrow(/nenhuma aba/i);
+  });
+
+  it("aceita a aba renomeada com sufixo e registra o nome lido", async () => {
+    // A aba já foi renomeada de "Mapeamento" para "Mapeamento SD" em produção.
+    const buffer = await planilhaDeTeste(
+      [[1, "Fulano", "DEV", "Salvador", "Candidata Fabíola Mansur", null, null]],
+      { aba: "Mapeamento SD" },
+    );
+    const { linhas, avisos } = await lerPlanilha(buffer);
+    expect(linhas).toHaveLength(1);
+    expect(avisos.join(" ")).toContain("Mapeamento SD");
+  });
+
+  it("lê OUTROS como resposta válida", async () => {
+    const buffer = await planilhaDeTeste([
+      [1, "Fulano", "DEV", "Salvador", "OUTROS", "OUTROS", null],
+    ]);
+    const { linhas, rejeitadas } = await lerPlanilha(buffer);
+    expect(rejeitadas).toBe(0);
+    expect(linhas[0].intencaoEstadual).toBe("OUTROS");
+    expect(linhas[0].intencaoFederal).toBe("OUTROS");
   });
 });

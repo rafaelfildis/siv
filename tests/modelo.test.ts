@@ -11,8 +11,8 @@ describe("construirModelo com os dados reais da base", () => {
 
   it("bate com os totais da aba Painel da planilha", () => {
     expect(est.equipeTotal).toBe(262);
-    expect(est.respostas).toBe(24);
-    expect(fed.respostas).toBe(21);
+    expect(est.respostas).toBe(41);
+    expect(fed.respostas).toBe(36);
   });
 
   it("fecha equipe com município + sem município", () => {
@@ -35,9 +35,8 @@ describe("construirModelo com os dados reais da base", () => {
 
   it("mede concentração no município líder", () => {
     expect(est.maiorConcentracao?.nome).toBe("Salvador");
-    expect(est.maiorConcentracao?.respostas).toBe(19);
-    // 19 de 24 respostas
-    expect(est.maiorConcentracao?.parcela).toBeCloseTo(19 / 24, 6);
+    expect(est.maiorConcentracao?.respostas).toBe(34);
+    expect(est.maiorConcentracao?.parcela).toBeCloseTo(34 / 41, 6);
   });
 
   it("soma integrantes das localidades sem nenhuma resposta", () => {
@@ -52,7 +51,14 @@ describe("construirModelo com os dados reais da base", () => {
   });
 
   it("cobertura em pontos percentuais, não em fração", () => {
-    expect(est.coberturaPontos).toBeCloseTo((24 / 262) * 100, 6);
+    // Derivado do próprio dataset: cravar o número faria este teste quebrar
+    // a cada atualização da planilha, sem indicar defeito nenhum.
+    expect(est.coberturaPontos).toBeCloseTo(
+      (est.respostas / est.equipeTotal) * 100,
+      6,
+    );
+    expect(est.coberturaPontos).toBeGreaterThan(1);
+    expect(est.coberturaPontos).toBeLessThan(100);
     expect(est.rotuloCobertura).toBe("Muito baixa");
   });
 

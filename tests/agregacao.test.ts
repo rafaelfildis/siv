@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { agregar, LIMIAR_SUPRESSAO_PADRAO } from "../src/lib/agregacao";
 import { construirIndice } from "../src/lib/normalizacao";
-import type { LinhaBruta } from "../src/lib/tipos";
+import { ehCandidatoNominal, type LinhaBruta } from "../src/lib/tipos";
 
 const indice = construirIndice([
   { properties: { id: "2927408", name: "Salvador" } },
@@ -118,5 +118,33 @@ describe("supressão por baixa contagem", () => {
 
   it("o limiar padrão protege município com uma única resposta", () => {
     expect(LIMIAR_SUPRESSAO_PADRAO).toBeGreaterThanOrEqual(3);
+  });
+});
+
+describe("opções que não são candidatos nominais", () => {
+  it("conta OUTROS e 'Não sei' como resposta, sem tratá-los como candidato", () => {
+    const linhas = [
+      linha({ numero: 1, municipio: "Salvador", intencaoEstadual: "OUTROS" }),
+      linha({ numero: 2, municipio: "Salvador", intencaoEstadual: "Não sei" }),
+      linha({
+        numero: 3,
+        municipio: "Salvador",
+        intencaoEstadual: "Candidata Fabíola Mansur",
+      }),
+    ];
+    const { dataset } = agregar(linhas, indice, opcoes);
+    // Os três entram na cobertura, como a aba "Painel" da planilha os conta.
+    expect(dataset.totais.respostas.estadual).toBe(3);
+    expect(ehCandidatoNominal("OUTROS")).toBe(false);
+    expect(ehCandidatoNominal("Não sei")).toBe(false);
+    expect(ehCandidatoNominal("Fabíola Mansur")).toBe(true);
+  });
+
+  it("não confunde OUTROS com um candidato de nome prefixado", () => {
+    const linhas = [
+      linha({ numero: 1, municipio: "Salvador", intencaoFederal: "OUTROS" }),
+    ];
+    const { dataset } = agregar(linhas, indice, opcoes);
+    expect(dataset.candidatos.federal).toEqual([{ candidato: "OUTROS", qtd: 1 }]);
   });
 });
