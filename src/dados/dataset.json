@@ -1,0 +1,275 @@
+{
+  "geradoEm": "2026-08-27T17:31:50.167Z",
+  "fonte": "MAPEAMENTO.xlsx",
+  "sha256": "e2c0b4927d8eb4359e7c9c48aa9912b712e3b0b6b045c858cc94173f2a2bcce4",
+  "limiarSupressao": 3,
+  "totais": {
+    "equipe": 262,
+    "respostas": {
+      "estadual": 24,
+      "federal": 21
+    },
+    "cobertura": {
+      "estadual": 0.0916030534351145,
+      "federal": 0.08015267175572519
+    }
+  },
+  "candidatos": {
+    "estadual": [
+      {
+        "candidato": "Fabíola Mansur",
+        "qtd": 23
+      },
+      {
+        "candidato": "Não sei",
+        "qtd": 1
+      }
+    ],
+    "federal": [
+      {
+        "candidato": "Lucas Reis",
+        "qtd": 11
+      },
+      {
+        "candidato": "Jorge Solla",
+        "qtd": 9
+      },
+      {
+        "candidato": "Não sei",
+        "qtd": 1
+      }
+    ]
+  },
+  "municipios": [
+    {
+      "codIbge": 2927408,
+      "nome": "Salvador",
+      "equipe": 116,
+      "respostas": {
+        "estadual": 19,
+        "federal": 16
+      },
+      "intencoes": {
+        "estadual": [
+          {
+            "candidato": "Fabíola Mansur",
+            "qtd": 19
+          }
+        ],
+        "federal": [
+          {
+            "candidato": "Jorge Solla",
+            "qtd": 9
+          },
+          {
+            "candidato": "Lucas Reis",
+            "qtd": 6
+          },
+          {
+            "candidato": "Não sei",
+            "qtd": 1
+          }
+        ]
+      },
+      "suprimido": [],
+      "foraDaMalha": false
+    },
+    {
+      "codIbge": 2910800,
+      "nome": "Feira de Santana",
+      "equipe": 8,
+      "respostas": {
+        "estadual": 0,
+        "federal": 0
+      },
+      "intencoes": {
+        "estadual": [],
+        "federal": []
+      },
+      "suprimido": [],
+      "foraDaMalha": false
+    },
+    {
+      "codIbge": 2933307,
+      "nome": "Vitória da Conquista",
+      "equipe": 8,
+      "respostas": {
+        "estadual": 4,
+        "federal": 4
+      },
+      "intencoes": {
+        "estadual": [
+          {
+            "candidato": "Fabíola Mansur",
+            "qtd": 4
+          }
+        ],
+        "federal": [
+          {
+            "candidato": "Lucas Reis",
+            "qtd": 4
+          }
+        ]
+      },
+      "suprimido": [],
+      "foraDaMalha": false
+    },
+    {
+      "codIbge": 2905701,
+      "nome": "Camaçari",
+      "equipe": 5,
+      "respostas": {
+        "estadual": 0,
+        "federal": 0
+      },
+      "intencoes": {
+        "estadual": [],
+        "federal": []
+      },
+      "suprimido": [],
+      "foraDaMalha": false
+    },
+    {
+      "codIbge": 2918001,
+      "nome": "Jequié",
+      "equipe": 5,
+      "respostas": {
+        "estadual": 0,
+        "federal": 0
+      },
+      "intencoes": {
+        "estadual": [],
+        "federal": []
+      },
+      "suprimido": [],
+      "foraDaMalha": false
+    },
+    {
+      "codIbge": 2926608,
+      "nome": "Ribeira do Pombal",
+      "equipe": 5,
+      "respostas": {
+        "estadual": 0,
+        "federal": 0
+      },
+      "intencoes": {
+        "estadual": [],
+        "federal": []
+      },
+      "suprimido": [],
+      "foraDaMalha": false
+    },
+    {
+      "codIbge": 2900702,
+      "nome": "Alagoinhas",
+      "equipe": 4,
+      "respostas": {
+        "estadual": 0,
+        "federal": 0
+      },
+      "intencoes": {
+        "estadual": [],
+        "federal": []
+      },
+      "suprimido": [],
+      "foraDaMalha": false
+    },
+    {
+      "codIbge": 2911709,
+      "nome": "Guanambi",
+      "equipe": 3,
+      "respostas": {
+        "estadual": 0,
+        "federal": 0
+      },
+      "intencoes": {
+        "estadual": [],
+        "federal": []
+      },
+      "suprimido": [],
+      "foraDaMalha": false
+    },
+    {
+      "codIbge": 2925303,
+      "nome": "Porto Seguro",
+      "equipe": 2,
+      "respostas": {
+        "estadual": 0,
+        "federal": 0
+      },
+      "intencoes": {
+        "estadual": [],
+        "federal": []
+      },
+      "suprimido": [],
+      "foraDaMalha": false
+    },
+    {
+      "codIbge": null,
+      "nome": "Asia",
+      "equipe": 1,
+      "respostas": {
+        "estadual": 0,
+        "federal": 0
+      },
+      "intencoes": {
+        "estadual": [],
+        "federal": []
+      },
+      "suprimido": [],
+      "foraDaMalha": true
+    },
+    {
+      "codIbge": null,
+      "nome": "Brasília",
+      "equipe": 1,
+      "respostas": {
+        "estadual": 0,
+        "federal": 0
+      },
+      "intencoes": {
+        "estadual": [],
+        "federal": []
+      },
+      "suprimido": [],
+      "foraDaMalha": true
+    },
+    {
+      "codIbge": 2913903,
+      "nome": "Ipiaú",
+      "equipe": 1,
+      "respostas": {
+        "estadual": 0,
+        "federal": 0
+      },
+      "intencoes": {
+        "estadual": [],
+        "federal": []
+      },
+      "suprimido": [],
+      "foraDaMalha": false
+    },
+    {
+      "codIbge": 2930501,
+      "nome": "Serrinha",
+      "equipe": 1,
+      "respostas": {
+        "estadual": 0,
+        "federal": 0
+      },
+      "intencoes": {
+        "estadual": [],
+        "federal": []
+      },
+      "suprimido": [],
+      "foraDaMalha": false
+    }
+  ],
+  "semMunicipio": {
+    "equipe": 102,
+    "respostas": {
+      "estadual": 1,
+      "federal": 1
+    }
+  }
+}

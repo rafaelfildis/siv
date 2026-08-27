@@ -1,0 +1,24 @@
+# Dependências e build
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# ─────────────────────────────────────────────────────────────────────
+# BASE NOMINAL — NUNCA VERSIONAR
+# A planilha MAPEAMENTO.xlsx vincula nome de pessoa a intenção de voto.
+# Convicção política é dado pessoal sensível (LGPD art. 5º, II). O arquivo
+# fica na máquina de quem roda a ingestão; o repositório guarda apenas o
+# agregado anônimo em src/dados/dataset.json. Ver DECISOES.md §3.
+# ─────────────────────────────────────────────────────────────────────
+data/*.xlsx
+data/*.xls
+data/*.csv
+
+# Ambiente
+.env
+.env.local
+.vercel
+.DS_Store
+data/geojs-*.json

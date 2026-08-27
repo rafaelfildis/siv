@@ -1,0 +1,19 @@
+[
+  {
+    "id": "6ea583e2-5252-48fd-aafd-cd007c300d49",
+    "fonte": "MAPEAMENTO.xlsx",
+    "sha256": "e2c0b4927d8eb4359e7c9c48aa9912b712e3b0b6b045c858cc94173f2a2bcce4",
+    "iniciadoEm": "2026-08-27T17:31:49.972Z",
+    "concluidoEm": "2026-08-27T17:31:50.178Z",
+    "status": "sucesso",
+    "linhasLidas": 265,
+    "linhasValidas": 262,
+    "linhasRejeitadas": 0,
+    "linhasAncora": 3,
+    "avisos": [
+      "3 linha(s)-âncora de filtro descartada(s): não são profissionais e seus votos de exemplo não entram na apuração.",
+      "Município \"Asia\" não corresponde a nenhum dos 417 municípios da Bahia; mantido nos totais, ausente do mapa.",
+      "Município \"Brasília\" não corresponde a nenhum dos 417 municípios da Bahia; mantido nos totais, ausente do mapa."
+    ]
+  }
+]

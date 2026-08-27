@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+/*
+ * Identidade visual herdada do portal SISD (navy + teal), para que o SIV
+ * seja lido como parte da mesma família de painéis.
+ */
+@theme {
+  --color-navy-900: #0a1b33;
+  --color-navy-800: #0f2545;
+  --color-navy-700: #163568;
+  --color-navy-600: #1f4682;
+  --color-teal: #0e9c95;
+  --color-teal-600: #0b7e78;
+  --color-teal-50: #e3f4f2;
+  --color-tinta: #0f1726;
+  --color-ardosia: #5c6b85;
+  --color-ardosia-400: #838fa1;
+  --color-linha: #e2e7ee;
+  --color-fundo: #f5f7fa;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+html, body { height: 100%; }
+
+body {
+  background: var(--color-fundo);
+  color: var(--color-tinta);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Números de painel: tabulares e apertados, para alinhar em coluna. */
+.numerico { font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+
+.cartao {
+  background: #fff;
+  border: 1px solid var(--color-linha);
+  border-radius: 0.75rem;
+}
+
+/* MapLibre sem basemap externo: o canvas herda o fundo do painel. */
+.maplibregl-canvas { outline: none; }
+.maplibregl-ctrl-attrib { font-size: 10px; opacity: 0.65; }
