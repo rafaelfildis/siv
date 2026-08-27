@@ -206,7 +206,6 @@ export default function Painel({ dataset, malha }: Props) {
           />
         </section>
 
-        <Rodape dataset={dataset} />
       </main>
     </div>
   );
@@ -270,26 +269,5 @@ function DetalheMunicipio({
         fechar
       </button>
     </div>
-  );
-}
-
-function Rodape({ dataset }: { dataset: Dataset }) {
-  const data = new Date(dataset.geradoEm).toLocaleString("pt-BR", {
-    dateStyle: "short",
-    timeStyle: "short",
-  });
-  return (
-    <footer className="cartao px-4 py-3 text-xs leading-relaxed text-ardosia">
-      <p>
-        <strong className="text-tinta">Base:</strong> {dataset.fonte} · agregada em{" "}
-        {data} · impressão {dataset.sha256.slice(0, 12)}
-      </p>
-      <p className="mt-1">
-        O painel opera exclusivamente sobre agregados por município. Nomes de
-        profissionais não são armazenados nem transmitidos. Municípios com menos
-        de {dataset.limiarSupressao} respostas têm a distribuição por candidato
-        omitida.
-      </p>
-    </footer>
   );
 }
