@@ -107,7 +107,7 @@ export default function DrawerMunicipio({
               ) : (
                 <>
                   <div className="flex items-baseline gap-2">
-                    <span className="num text-2xl font-semibold text-navy">
+                    <span className="num text-2xl font-semibold text-figura">
                       {Math.round(linha.coberturaPontos)}%
                     </span>
                     <span className="text-[12.5px] text-text-2">
@@ -116,7 +116,7 @@ export default function DrawerMunicipio({
                   </div>
                   <div className="mt-2 h-1.5 overflow-hidden rounded-[3px] bg-surface-3">
                     <div
-                      className="h-full rounded-[3px] bg-navy-700"
+                      className="h-full rounded-[3px] bg-figura-barra"
                       style={{ width: `${Math.max(linha.coberturaPontos, 0.8)}%` }}
                     />
                   </div>
@@ -184,7 +184,7 @@ export default function DrawerMunicipio({
 
             {linha.equipe > 0 && linha.respostas < linha.equipe && (
               <Bloco titulo="Equipe sem resposta">
-                <p className="num text-2xl font-semibold text-navy">
+                <p className="num text-2xl font-semibold text-figura">
                   {linha.equipe - linha.respostas}
                 </p>
                 <p className="mt-1 text-[11.5px] text-text-2">

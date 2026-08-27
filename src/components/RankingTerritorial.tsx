@@ -136,7 +136,7 @@ export default function RankingTerritorial({
                   {it.secundaria}
                 </span>
               </span>
-              <span className="num text-right text-[13.5px] font-semibold text-navy">
+              <span className="num text-right text-[13.5px] font-semibold text-figura">
                 {it.principal}
               </span>
               <button

@@ -75,14 +75,14 @@ export default function Diagnostico({ modelo }: { modelo: Modelo }) {
 
       <Bloco titulo="Cobertura estadual">
         <div className="flex items-baseline gap-2">
-          <span className="num text-2xl font-semibold text-navy">
+          <span className="num text-2xl font-semibold text-figura">
             {pontosPct(modelo.coberturaPontos)}
           </span>
           <span className="text-[12.5px] text-text-2">{modelo.rotuloCobertura}</span>
         </div>
         <div className="mt-2 h-1.5 overflow-hidden rounded-[3px] bg-surface-3">
           <div
-            className="h-full rounded-[3px] bg-navy-700"
+            className="h-full rounded-[3px] bg-figura-barra"
             style={{ width: `${Math.max(modelo.coberturaPontos, 0.8)}%` }}
           />
         </div>
@@ -93,7 +93,7 @@ export default function Diagnostico({ modelo }: { modelo: Modelo }) {
       </Bloco>
 
       <Bloco titulo="Concentração territorial">
-        <p className="num text-2xl font-semibold text-navy">
+        <p className="num text-2xl font-semibold text-figura">
           {modelo.comDados.length}
           <span className="text-base font-medium text-text-3">
             {" "}

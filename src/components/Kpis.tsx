@@ -89,7 +89,7 @@ export default function Kpis({ modelo }: { modelo: Modelo }) {
           </div>
           <div
             className={`num mt-0.5 text-[30px] font-semibold leading-none tracking-[-.02em] ${
-              c.atencao ? "text-[#9A5308]" : "text-navy"
+              c.atencao ? "text-[#9A5308]" : "text-figura"
             }`}
           >
             {c.valor}
