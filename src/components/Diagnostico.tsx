@@ -69,10 +69,6 @@ export default function Diagnostico({ modelo }: { modelo: Modelo }) {
                 </li>
               ))}
             </ul>
-            <p className="mt-3 border-t border-border pt-2 text-[11.5px] leading-snug text-text-3">
-              Percentuais calculados sobre {respostas} respostas — amostra
-              insuficiente para leitura por região ou projeção estadual.
-            </p>
           </>
         )}
       </Bloco>
