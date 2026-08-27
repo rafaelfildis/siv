@@ -64,7 +64,10 @@ export default function AppHeader({
   };
 
   return (
-    <header className="sticky top-0 z-[60] h-[60px] bg-navy">
+    <header
+      className="sticky top-0 z-[60] h-[60px]"
+      style={{ background: "var(--header-grad)" }}
+    >
       <div className="mx-auto flex h-full max-w-[1440px] items-center gap-4 px-5">
         <div className="flex items-baseline gap-2.5">
           <span className="text-[19px] font-bold tracking-[.06em] text-white">SIV</span>
@@ -109,7 +112,7 @@ export default function AppHeader({
                   setAberto(false);
                 }
               }}
-              className="h-[34px] w-[236px] rounded-[var(--r-sm)] border border-white/[.18] bg-white/[.08] pl-[30px] pr-7 text-[13px] text-white placeholder:text-on-navy focus:border-[#5C86AC] focus:bg-white/[.14]"
+              className="h-[34px] w-[236px] rounded-[var(--r-sm)] border border-white/[.18] bg-white/[.08] pl-[30px] pr-7 text-[13px] text-white placeholder:text-on-navy focus:border-white/60 focus:bg-white/[.18]"
             />
             {termo && (
               <button
@@ -157,7 +160,9 @@ export default function AppHeader({
                 aria-pressed={cargo === c}
                 onClick={() => aoTrocarCargo(c)}
                 className={`rounded-[3px] px-[13px] py-[5px] text-[13px] font-medium transition ${
-                  cargo === c ? "bg-white text-navy" : "text-[#BACBDC] hover:text-white"
+                  cargo === c
+                    ? "bg-white text-[var(--red-7)]"
+                    : "text-[var(--on-navy-2)] hover:text-white"
                 }`}
               >
                 {ROTULO_CARGO[c]}

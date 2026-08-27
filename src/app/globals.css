@@ -9,9 +9,21 @@
   --bg:#F4F6F8; --surface:#FFFFFF; --surface-2:#FAFBFC; --surface-3:#EFF2F6;
   /* marca / estrutura */
   --navy:#0C2740; --navy-700:#12395B;
+  /*
+   * Rampa vermelha da identidade (7 passos, claro -> escuro).
+   * O cabeçalho usa do 2º passo em diante: sobre #FF0000 o texto branco
+   * fica em 4,00:1 e reprova o AA de texto normal, que é o caso do
+   * subtítulo de 13px. A partir de #DC0000 (5,19:1) passa em toda a faixa.
+   */
+  --red-1:#FF0000; --red-2:#DC0000; --red-3:#C00000; --red-4:#A80000;
+  --red-5:#950000; --red-6:#800000; --red-7:#6B0000;
+  --header-grad:linear-gradient(90deg,
+    var(--red-2) 0%, var(--red-3) 22%, var(--red-4) 44%,
+    var(--red-5) 64%, var(--red-6) 82%, var(--red-7) 100%);
   /* texto */
   --text:#101828; --text-2:#4A5567; --text-3:#79838F;
-  --on-navy:#A9BED2; --on-navy-2:#BACBDC;
+  /* Texto secundário sobre a faixa vermelha: >= 5,2:1 em toda a extensão. */
+  --on-navy:#F2D2D2; --on-navy-2:#F8DFDF;
   /* bordas */
   --border:#E3E7EC; --border-strong:#CBD2DA;
   /* semânticas */
@@ -36,6 +48,7 @@
   --color-bg:var(--bg); --color-surface:var(--surface);
   --color-surface-2:var(--surface-2); --color-surface-3:var(--surface-3);
   --color-navy:var(--navy); --color-navy-700:var(--navy-700);
+  --color-red-7:var(--red-7);
   --color-text:var(--text); --color-text-2:var(--text-2); --color-text-3:var(--text-3);
   --color-on-navy:var(--on-navy);
   --color-border:var(--border); --color-border-strong:var(--border-strong);
