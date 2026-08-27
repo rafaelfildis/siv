@@ -1,273 +1,200 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useMemo, useState } from "react";
-import {
-  candidatosDe,
-  formatarPct,
-  lacunas,
-  linhasPara,
-  TODOS,
-} from "@/lib/consultas";
-import { concentracao } from "@/lib/agregacao";
-import { corDe, rampa, RAMPA_NEUTRA } from "@/lib/paleta";
-import { ROTULO_CARGO, type Cargo, type Dataset } from "@/lib/tipos";
-import Indicadores from "./Indicadores";
-import BarrasCandidatos from "./BarrasCandidatos";
-import Ranking from "./Ranking";
-import Lacunas from "./Lacunas";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { construirModelo, type LinhaMunicipio } from "@/lib/consultas";
+import type { ChaveCamada } from "@/lib/camadas";
+import type { MalhaBahia } from "@/lib/malha";
+import type { Cargo, Dataset } from "@/lib/tipos";
+import AppHeader from "./AppHeader";
+import Kpis from "./Kpis";
+import Diagnostico from "./Diagnostico";
+import AtencaoOperacional from "./AtencaoOperacional";
+import RankingTerritorial from "./RankingTerritorial";
+import TabelaMunicipios from "./TabelaMunicipios";
+import DrawerMunicipio from "./DrawerMunicipio";
 
-// MapLibre toca em window/WebGL: só no cliente.
+// O mapa usa medidas do DOM e d3-zoom: só no cliente.
 const Mapa = dynamic(() => import("./Mapa"), {
   ssr: false,
   loading: () => (
-    <div className="flex h-full items-center justify-center text-sm text-ardosia-400">
-      Carregando mapa…
-    </div>
+    <section className="card">
+      <div className="card-head">
+        <h2>Bahia · 417 municípios</h2>
+      </div>
+      <div
+        className="flex items-center justify-center"
+        style={{ height: "clamp(400px, calc(100vh - 268px), 600px)" }}
+      >
+        <div className="shimmer h-[290px] w-[230px] rounded-[var(--r-md)]" />
+      </div>
+    </section>
   ),
 });
 
-type Props = { dataset: Dataset; malha: GeoJSON.FeatureCollection };
-
-export default function Painel({ dataset, malha }: Props) {
+export default function Painel({
+  dataset,
+  malha,
+}: {
+  dataset: Dataset;
+  malha: MalhaBahia;
+}) {
   const [cargo, setCargo] = useState<Cargo>("estadual");
-  const [candidato, setCandidato] = useState<string | null>(null);
+  const [camada, setCamada] = useState<ChaveCamada>("situacao");
   const [selecionado, setSelecionado] = useState<number | null>(null);
-
-  const linhas = useMemo(
-    () => linhasPara(dataset, cargo, candidato ?? TODOS),
-    [dataset, cargo, candidato],
+  const [linhaAberta, setLinhaAberta] = useState<LinhaMunicipio | null>(null);
+  const [alvoZoom, setAlvoZoom] = useState<{ codIbge: number; token: number } | null>(
+    null,
   );
-  const candidatos = useMemo(() => candidatosDe(dataset, cargo), [dataset, cargo]);
-  const semResposta = useMemo(() => lacunas(linhas), [linhas]);
+  const [incluirSemEquipe, setIncluirSemEquipe] = useState(false);
+  const [filtroTabela, setFiltroTabela] = useState("");
+  const tabelaRef = useRef<HTMLDivElement>(null);
+  const token = useRef(0);
 
-  const noMapa = linhas.filter((l) => !l.foraDaMalha);
-  const municipiosComEquipe = noMapa.length;
-  const municipiosComResposta = noMapa.filter((l) => l.respostas > 0).length;
-  const conc = concentracao(noMapa.map((l) => ({ nome: l.nome, valor: l.valor })));
+  const modelo = useMemo(() => construirModelo(dataset, cargo), [dataset, cargo]);
 
-  // Ao filtrar por candidato, a rampa do mapa assume a cor dele.
-  const corBase = candidato ? corDe(candidato) : null;
-  const detalheSelecionado =
-    selecionado === null
-      ? null
-      : (linhas.find((l) => l.codIbge === selecionado) ?? null);
+  const nomesDaMalha = useMemo(
+    () => new Map(malha.features.map((f) => [f.properties.cod_ibge, f.properties.nome])),
+    [malha],
+  );
+
+  const zoomPara = useCallback((codIbge: number) => {
+    token.current += 1;
+    setAlvoZoom({ codIbge, token: token.current });
+  }, []);
+
+  /** Abre o drawer para um código da malha, mesmo sem registro na base. */
+  const abrirPorCodigo = useCallback(
+    (codIbge: number | null) => {
+      if (codIbge === null) {
+        setSelecionado(null);
+        setLinhaAberta(null);
+        return;
+      }
+      setSelecionado(codIbge);
+      const existente = modelo.porCodigo.get(codIbge);
+      setLinhaAberta(
+        existente ?? {
+          codIbge,
+          nome: nomesDaMalha.get(codIbge) ?? "Município",
+          equipe: 0,
+          respostas: 0,
+          coberturaPontos: 0,
+          faixa: {
+            chave: "semequipe",
+            min: 0,
+            rotulo: "Sem equipe identificada",
+            cor: "var(--nodata)",
+          },
+          rotuloCobertura: "Sem cobertura",
+          intencoes: [],
+          suprimido: false,
+          foraDaMalha: false,
+          ultimaResposta: null,
+        },
+      );
+    },
+    [modelo, nomesDaMalha],
+  );
+
+  const abrirLinha = useCallback((l: LinhaMunicipio) => {
+    setLinhaAberta(l);
+    if (l.codIbge !== null) setSelecionado(l.codIbge);
+  }, []);
+
+  const localizar = useCallback(
+    (l: LinhaMunicipio) => {
+      if (l.codIbge === null || l.foraDaMalha) return;
+      zoomPara(l.codIbge);
+      abrirLinha(l);
+    },
+    [zoomPara, abrirLinha],
+  );
+
+  const rolarAteTabela = () =>
+    tabelaRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
 
   return (
-    <div className="min-h-screen">
-      {/* ── Cabeçalho ─────────────────────────────────────────────── */}
-      <header className="border-b border-navy-700/40 bg-navy-900">
-        <div className="mx-auto flex max-w-[1600px] flex-wrap items-center gap-x-6 gap-y-3 px-5 py-3">
-          <div>
-            <div className="flex items-baseline gap-2.5">
-              <span className="text-lg font-semibold tracking-tight text-white">SIV</span>
-              <span className="text-sm text-white/55">Sistema de Intenção de Voto</span>
-            </div>
-            <p className="mt-0.5 text-[11px] text-white/40">
-              Bahia · 2026 · painel interno de coordenação
-            </p>
-          </div>
+    <>
+      <AppHeader
+        cargo={cargo}
+        aoTrocarCargo={(c) => {
+          setCargo(c);
+          setLinhaAberta(null);
+          setSelecionado(null);
+        }}
+        malha={malha}
+        aoEscolherMunicipio={(cod) => {
+          zoomPara(cod);
+          abrirPorCodigo(cod);
+        }}
+      />
 
-          {/* Alternador de cargo — o eixo primário de leitura do painel. */}
-          <div
-            role="group"
-            aria-label="Cargo"
-            className="ml-auto flex rounded-lg bg-white/8 p-0.5"
-          >
-            {(["estadual", "federal"] as Cargo[]).map((c) => (
-              <button
-                key={c}
-                type="button"
-                onClick={() => {
-                  setCargo(c);
-                  setCandidato(null);
-                }}
-                aria-pressed={cargo === c}
-                className={`rounded-[6px] px-3.5 py-1.5 text-sm font-medium transition ${
-                  cargo === c
-                    ? "bg-white text-navy-900"
-                    : "text-white/65 hover:text-white"
-                }`}
-              >
-                {ROTULO_CARGO[c]}
-              </button>
-            ))}
+      <main className="mx-auto flex max-w-[1440px] flex-col gap-3 px-5 py-3 pb-12">
+        <Kpis modelo={modelo} />
+
+        {/*
+          No mobile a coluna lateral vira `display: contents`, para que os seus
+          dois cartões entrem na ordenação do pai e a leitura fique
+          KPIs -> Diagnóstico -> Mapa -> Atenção operacional (handoff, §responsividade).
+        */}
+        <div className="flex flex-col items-start gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_372px]">
+          <div className="order-2 w-full lg:order-1 lg:h-full">
+            <Mapa
+              malha={malha}
+              modelo={modelo}
+              camada={camada}
+              aoTrocarCamada={setCamada}
+              selecionado={selecionado}
+              aoSelecionar={abrirPorCodigo}
+              alvoZoom={alvoZoom}
+            />
+          </div>
+          <div className="contents lg:order-2 lg:flex lg:flex-col lg:gap-3">
+            <div className="order-1 w-full lg:order-none">
+              <Diagnostico modelo={modelo} />
+            </div>
+            <div className="order-3 w-full lg:order-none">
+              <AtencaoOperacional modelo={modelo} aoAbrir={localizar} />
+            </div>
           </div>
         </div>
-      </header>
 
-      <main className="mx-auto max-w-[1600px] space-y-4 px-5 py-5">
-        <Indicadores
-          equipe={dataset.totais.equipe}
-          respostas={dataset.totais.respostas[cargo]}
-          cobertura={dataset.totais.cobertura[cargo]}
-          municipiosComEquipe={municipiosComEquipe}
-          municipiosComResposta={municipiosComResposta}
-          semMunicipio={dataset.semMunicipio.equipe}
+        <RankingTerritorial
+          modelo={modelo}
+          aoLocalizar={localizar}
+          aoVerTodos={() => {
+            setIncluirSemEquipe(true);
+            rolarAteTabela();
+          }}
         />
 
-        <div className="grid gap-4 lg:grid-cols-[1fr_380px]">
-          {/* ── Mapa ────────────────────────────────────────────── */}
-          <section className="cartao flex flex-col overflow-hidden">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-linha px-4 py-3">
-              <div>
-                <h2 className="text-sm font-semibold text-tinta">
-                  {candidato
-                    ? `Intenções para ${candidato}`
-                    : "Intenções declaradas por município"}
-                </h2>
-                <p className="text-xs text-ardosia-400">
-                  {candidato
-                    ? "Clique na barra do candidato novamente para ver todos"
-                    : "Clique num candidato ao lado para filtrar o mapa"}
-                </p>
-              </div>
-              <Legenda corBase={corBase} />
-            </div>
-            <div className="min-h-[440px] w-full flex-1 bg-fundo">
-              <Mapa
-                malha={malha}
-                linhas={linhas}
-                metrica="valor"
-                corBase={corBase}
-                selecionado={selecionado}
-                aoSelecionar={setSelecionado}
-              />
-            </div>
-            {detalheSelecionado && (
-              <DetalheMunicipio
-                linha={detalheSelecionado}
-                aoFechar={() => setSelecionado(null)}
-              />
-            )}
-          </section>
-
-          {/* ── Coluna lateral ──────────────────────────────────── */}
-          <div className="space-y-4">
-            <section className="cartao px-4 py-3.5">
-              <h2 className="mb-3 text-sm font-semibold text-tinta">
-                Intenção — {ROTULO_CARGO[cargo]}
-              </h2>
-              <BarrasCandidatos
-                dados={dataset.candidatos[cargo]}
-                total={dataset.totais.respostas[cargo]}
-                aoFiltrar={setCandidato}
-                selecionado={candidato}
-              />
-              {candidatos.length > 0 && (
-                <p className="mt-3 border-t border-linha pt-2.5 text-xs text-ardosia-400">
-                  {conc.tipo === "indice" ? (
-                    <>
-                      Concentração territorial (Gini):{" "}
-                      <strong className="numerico text-ardosia">
-                        {conc.valor.toFixed(2).replace(".", ",")}
-                      </strong>{" "}
-                      entre {conc.municipios} municípios — 0 é distribuição
-                      uniforme, 1 é tudo num município só.
-                    </>
-                  ) : conc.tipo === "municipio_unico" ? (
-                    <>
-                      Concentração máxima: toda a votação declarada está em{" "}
-                      <strong className="text-ardosia">{conc.nome}</strong>. Com um
-                      único município pontuado, o índice de Gini não é
-                      interpretável.
-                    </>
-                  ) : (
-                    <>Sem respostas suficientes para calcular concentração.</>
-                  )}
-                </p>
-              )}
-            </section>
-
-            <section className="cartao px-4 py-3.5">
-              <h2 className="mb-3 text-sm font-semibold text-tinta">
-                Potencial não explorado
-              </h2>
-              <Lacunas linhas={semResposta} />
-            </section>
-          </div>
-        </div>
-
-        {/* ── Tabela de dados ──────────────────────────────────── */}
-        <section className="cartao px-4 py-3.5">
-          <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2">
-            <h2 className="text-sm font-semibold text-tinta">
-              Municípios · {ROTULO_CARGO[cargo]}
-            </h2>
-            <p className="text-xs text-ardosia-400">
-              Cobertura geral: {formatarPct(dataset.totais.cobertura[cargo])}
-            </p>
-          </div>
-          <Ranking
-            linhas={linhas}
+        <div ref={tabelaRef}>
+          <TabelaMunicipios
+            modelo={modelo}
+            malha={malha}
             selecionado={selecionado}
-            aoSelecionar={setSelecionado}
-            candidato={candidato}
+            aoSelecionar={abrirLinha}
+            incluirSemEquipe={incluirSemEquipe}
+            setIncluirSemEquipe={setIncluirSemEquipe}
+            filtro={filtroTabela}
+            setFiltro={setFiltroTabela}
           />
-        </section>
-
-      </main>
-    </div>
-  );
-}
-
-function Legenda({ corBase }: { corBase: string | null }) {
-  const passos = corBase ? rampa(corBase) : RAMPA_NEUTRA;
-  return (
-    <div className="flex items-center gap-2 text-[11px] text-ardosia-400">
-      <span>menos</span>
-      <div className="flex overflow-hidden rounded-[3px]">
-        {passos.map((cor) => (
-          <span key={cor} className="h-2.5 w-6" style={{ background: cor }} />
-        ))}
-      </div>
-      <span>mais</span>
-    </div>
-  );
-}
-
-function DetalheMunicipio({
-  linha,
-  aoFechar,
-}: {
-  linha: ReturnType<typeof linhasPara>[number];
-  aoFechar: () => void;
-}) {
-  return (
-    <div className="flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-linha bg-fundo px-4 py-3">
-      <div>
-        <div className="text-sm font-semibold text-tinta">{linha.nome}</div>
-        <div className="text-xs text-ardosia-400">
-          {linha.equipe} na equipe · {linha.respostas} responderam ·{" "}
-          {formatarPct(linha.cobertura, 0)} de cobertura
         </div>
-      </div>
-      <div className="flex flex-wrap items-center gap-4">
-        {linha.suprimido ? (
-          <span className="text-xs text-ardosia">
-            Distribuição omitida por baixa contagem.
-          </span>
-        ) : (
-          linha.detalhe.map((d) => (
-            <span key={d.candidato} className="flex items-center gap-1.5 text-xs">
-              <span
-                aria-hidden
-                className="h-2.5 w-2.5 rounded-[3px]"
-                style={{ background: corDe(d.candidato) }}
-              />
-              <span className="text-ardosia">{d.candidato}</span>
-              <strong className="numerico text-tinta">{d.qtd}</strong>
-            </span>
-          ))
-        )}
-      </div>
-      <button
-        type="button"
-        onClick={aoFechar}
-        className="ml-auto text-xs text-ardosia-400 underline-offset-2 hover:text-ardosia hover:underline"
-      >
-        fechar
-      </button>
-    </div>
+      </main>
+
+      <DrawerMunicipio
+        linha={linhaAberta}
+        modelo={modelo}
+        aoFechar={() => setLinhaAberta(null)}
+        aoVerNaTabela={(l) => {
+          setFiltroTabela(l.nome);
+          setIncluirSemEquipe(true);
+          setLinhaAberta(null);
+          rolarAteTabela();
+        }}
+        aoLocalizar={(l) => l.codIbge !== null && zoomPara(l.codIbge)}
+      />
+    </>
   );
 }

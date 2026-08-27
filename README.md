@@ -18,9 +18,10 @@ para no nível de **município** — sem zona eleitoral, sem seção.
 |---|---|
 | Ingestão da planilha, idempotente e validada | pronto |
 | Agregação por município, anônima | pronto |
-| Mapa coroplético dos 417 municípios da Bahia | pronto |
-| Filtro por cargo e por candidato | pronto |
-| Indicadores, ranking e lacunas de cobertura | pronto |
+| Mapa coroplético dos 417 municípios, com 6 camadas | pronto |
+| Diagnóstico territorial e atenção operacional | pronto |
+| Ranking, tabela ordenável e drawer por município | pronto |
+| Busca de município com zoom | pronto |
 | Resultados oficiais do TSE | fora do escopo desta fase |
 | Zona e seção eleitoral | fora do escopo desta fase |
 | Autenticação e perfis de acesso | fora do escopo desta fase |
@@ -151,11 +152,27 @@ scripts/preparar-malha.ts   malha municipal da Bahia, simplificada
 scripts/ingerir.ts          planilha -> agregado anônimo (idempotente)
 src/lib/tipos.ts            schemas Zod; o contrato dos dados
 src/lib/normalizacao.ts     casamento de nomes de município
-src/lib/agregacao.ts        agregação, supressão e Gini
-src/lib/consultas.ts        resolução do dataset para os filtros do painel
-src/lib/paleta.ts           cores validadas para daltonismo
-src/components/             mapa, indicadores, barras, ranking, lacunas
+src/lib/agregacao.ts        agregação e supressão por baixa contagem
+src/lib/faixas.ts           faixas de base e de cobertura (configuráveis)
+src/lib/camadas.ts          as 6 camadas do mapa e suas legendas
+src/lib/consultas.ts        modelo derivado que alimenta todos os blocos
+src/components/             header, KPIs, mapa, diagnóstico, ranking, tabela, drawer
 src/dados/                  dataset agregado + malha + log de importação
 ```
+
+## Regras de leitura que o código garante
+
+O painel segue o handoff "SIV — Painel de Inteligência Territorial". Quatro
+regras estão implementadas com teste, porque errar nelas produz leitura errada
+de número eleitoral:
+
+1. **Ausência de informação nunca tem a mesma cor que ausência de resposta.**
+   Município sem equipe é cinza; município com equipe e zero respostas é âmbar.
+   Há um teste que percorre as 6 camadas e falha se alguma pintar os dois igual.
+2. **Município com 1 a 4 respostas não recebe cor cheia** na camada de intenção:
+   recebe hachura e o rótulo "amostra pequena".
+3. **Todo percentual aparece com o tamanho da amostra** ("50% · 4 de 8 respostas").
+4. **Vermelho só marca problema operacional ou de qualidade de dado**, nunca
+   baixo apoio político.
 
 Ver `DECISOES.md` para as escolhas técnicas e seus motivos.

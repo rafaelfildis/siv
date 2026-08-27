@@ -1,5 +1,5 @@
 {
-  "geradoEm": "2026-08-27T17:31:50.167Z",
+  "geradoEm": "2026-08-27T19:34:18.653Z",
   "fonte": "MAPEAMENTO.xlsx",
   "sha256": "e2c0b4927d8eb4359e7c9c48aa9912b712e3b0b6b045c858cc94173f2a2bcce4",
   "limiarSupressao": 3,
@@ -72,7 +72,8 @@
         ]
       },
       "suprimido": [],
-      "foraDaMalha": false
+      "foraDaMalha": false,
+      "ultimaResposta": null
     },
     {
       "codIbge": 2910800,
@@ -87,7 +88,8 @@
         "federal": []
       },
       "suprimido": [],
-      "foraDaMalha": false
+      "foraDaMalha": false,
+      "ultimaResposta": null
     },
     {
       "codIbge": 2933307,
@@ -112,7 +114,8 @@
         ]
       },
       "suprimido": [],
-      "foraDaMalha": false
+      "foraDaMalha": false,
+      "ultimaResposta": null
     },
     {
       "codIbge": 2905701,
@@ -127,7 +130,8 @@
         "federal": []
       },
       "suprimido": [],
-      "foraDaMalha": false
+      "foraDaMalha": false,
+      "ultimaResposta": null
     },
     {
       "codIbge": 2918001,
@@ -142,7 +146,8 @@
         "federal": []
       },
       "suprimido": [],
-      "foraDaMalha": false
+      "foraDaMalha": false,
+      "ultimaResposta": null
     },
     {
       "codIbge": 2926608,
@@ -157,7 +162,8 @@
         "federal": []
       },
       "suprimido": [],
-      "foraDaMalha": false
+      "foraDaMalha": false,
+      "ultimaResposta": null
     },
     {
       "codIbge": 2900702,
@@ -172,7 +178,8 @@
         "federal": []
       },
       "suprimido": [],
-      "foraDaMalha": false
+      "foraDaMalha": false,
+      "ultimaResposta": null
     },
     {
       "codIbge": 2911709,
@@ -187,7 +194,8 @@
         "federal": []
       },
       "suprimido": [],
-      "foraDaMalha": false
+      "foraDaMalha": false,
+      "ultimaResposta": null
     },
     {
       "codIbge": 2925303,
@@ -202,7 +210,8 @@
         "federal": []
       },
       "suprimido": [],
-      "foraDaMalha": false
+      "foraDaMalha": false,
+      "ultimaResposta": null
     },
     {
       "codIbge": null,
@@ -217,7 +226,8 @@
         "federal": []
       },
       "suprimido": [],
-      "foraDaMalha": true
+      "foraDaMalha": true,
+      "ultimaResposta": null
     },
     {
       "codIbge": null,
@@ -232,7 +242,8 @@
         "federal": []
       },
       "suprimido": [],
-      "foraDaMalha": true
+      "foraDaMalha": true,
+      "ultimaResposta": null
     },
     {
       "codIbge": 2913903,
@@ -247,7 +258,8 @@
         "federal": []
       },
       "suprimido": [],
-      "foraDaMalha": false
+      "foraDaMalha": false,
+      "ultimaResposta": null
     },
     {
       "codIbge": 2930501,
@@ -262,7 +274,8 @@
         "federal": []
       },
       "suprimido": [],
-      "foraDaMalha": false
+      "foraDaMalha": false,
+      "ultimaResposta": null
     }
   ],
   "semMunicipio": {

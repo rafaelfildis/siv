@@ -1,10 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  agregar,
-  concentracao,
-  gini,
-  LIMIAR_SUPRESSAO_PADRAO,
-} from "../src/lib/agregacao";
+import { agregar, LIMIAR_SUPRESSAO_PADRAO } from "../src/lib/agregacao";
 import { construirIndice } from "../src/lib/normalizacao";
 import type { LinhaBruta } from "../src/lib/tipos";
 
@@ -123,66 +118,5 @@ describe("supressão por baixa contagem", () => {
 
   it("o limiar padrão protege município com uma única resposta", () => {
     expect(LIMIAR_SUPRESSAO_PADRAO).toBeGreaterThanOrEqual(3);
-  });
-});
-
-describe("gini", () => {
-  it("é 0 quando a distribuição é perfeitamente igual", () => {
-    expect(gini([10, 10, 10, 10])).toBeCloseTo(0, 10);
-  });
-
-  it("bate com o valor calculado à mão", () => {
-    // n=2, soma=4 -> [(2*1-2-1)*1 + (2*2-2-1)*3] / (2*4) = (-1 + 3)/8 = 0.25
-    expect(gini([1, 3])).toBeCloseTo(0.25, 10);
-    // n=4, soma=10 -> [(-3)(1) + (-1)(2) + (1)(3) + (3)(4)] / 40 = 10/40
-    expect(gini([1, 2, 3, 4])).toBeCloseTo(0.25, 10);
-  });
-
-  it("não passa do teto (n-1)/n de uma amostra finita", () => {
-    const concentrado = gini(Array(99).fill(1).concat(1000));
-    expect(concentrado).toBeGreaterThan(0.85);
-    expect(concentrado).toBeLessThan(0.99); // teto teórico com n=100
-  });
-
-  it("ignora zeros em vez de contá-los como municípios", () => {
-    expect(gini([0, 0, 0, 100])).toBeCloseTo(0, 10);
-  });
-
-  it("cresce com a desigualdade", () => {
-    expect(gini([1, 1, 1, 7])).toBeGreaterThan(gini([2, 2, 3, 3]));
-  });
-
-  it("não quebra com lista vazia ou só zeros", () => {
-    expect(gini([])).toBe(0);
-    expect(gini([0, 0])).toBe(0);
-  });
-});
-
-describe("concentracao", () => {
-  it("não apresenta Gini quando só um município pontuou", () => {
-    // O Gini cru daria 0,00 e o painel leria "distribuição uniforme" — o
-    // oposto da verdade, que é concentração total num município.
-    const r = concentracao([
-      { nome: "Salvador", valor: 9 },
-      { nome: "Jequié", valor: 0 },
-    ]);
-    expect(r).toEqual({ tipo: "municipio_unico", nome: "Salvador" });
-  });
-
-  it("apresenta o índice a partir de dois municípios pontuados", () => {
-    const r = concentracao([
-      { nome: "Salvador", valor: 19 },
-      { nome: "Vitória da Conquista", valor: 4 },
-    ]);
-    expect(r.tipo).toBe("indice");
-    if (r.tipo === "indice") {
-      expect(r.municipios).toBe(2);
-      expect(r.valor).toBeGreaterThan(0);
-    }
-  });
-
-  it("distingue ausência de dados de concentração", () => {
-    expect(concentracao([{ nome: "Jequié", valor: 0 }])).toEqual({ tipo: "sem_dados" });
-    expect(concentracao([])).toEqual({ tipo: "sem_dados" });
   });
 });

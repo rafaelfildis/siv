@@ -1,82 +1,131 @@
-import type { Cargo, Dataset, MunicipioAgregado } from "./tipos";
+import { classificarBase, faixaCobertura, type Faixa } from "./faixas";
+import type { Cargo, Contagem, Dataset, MunicipioAgregado } from "./tipos";
 
-/** Uma linha da tabela/ranking, já resolvida para o filtro corrente. */
+/** Um município resolvido para o cargo corrente. */
 export type LinhaMunicipio = {
   codIbge: number | null;
   nome: string;
   equipe: number;
   respostas: number;
-  /** Intenções do candidato filtrado, ou total de intenções se "todos". */
-  valor: number;
-  /** valor / equipe — penetração da campanha naquele município. */
-  penetracao: number;
-  /** respostas / equipe — quanto do município já foi ouvido. */
-  cobertura: number;
+  /** Cobertura em pontos percentuais (0–100), como as faixas esperam. */
+  coberturaPontos: number;
+  faixa: Faixa;
+  rotuloCobertura: string;
+  intencoes: Contagem[];
+  /** Distribuição omitida por baixa contagem — ver DECISOES.md §3. */
   suprimido: boolean;
   foraDaMalha: boolean;
-  detalhe: { candidato: string; qtd: number }[];
+  ultimaResposta: string | null;
 };
 
-export const TODOS = "__todos__";
+/** Tudo que os blocos do painel consomem, derivado uma vez por cargo. */
+export type Modelo = {
+  cargo: Cargo;
+  linhas: LinhaMunicipio[];
+  /** Só municípios da Bahia (exclui os registros fora do escopo territorial). */
+  naBahia: LinhaMunicipio[];
+  comDados: LinhaMunicipio[];
+  semResposta: LinhaMunicipio[];
+  foraDaBahia: LinhaMunicipio[];
+  porCodigo: Map<number, LinhaMunicipio>;
+  equipeTotal: number;
+  equipeComMunicipio: number;
+  semMunicipio: number;
+  respostas: number;
+  respostasSemMunicipio: number;
+  coberturaPontos: number;
+  rotuloCobertura: string;
+  intencoes: Contagem[];
+  /** Município que concentra mais respostas, para a leitura de concentração. */
+  maiorConcentracao: { nome: string; respostas: number; parcela: number } | null;
+  integrantesSemResposta: number;
+};
 
-/**
- * Resolve o dataset para o par (cargo, candidato) selecionado.
- *
- * Quando um candidato específico está filtrado, municípios com a distribuição
- * suprimida entram com valor 0 e `suprimido: true` — o mapa os pinta de
- * hachura em vez de fingir ausência de voto.
- */
-export function linhasPara(
-  dataset: Dataset,
-  cargo: Cargo,
-  candidato: string,
-): LinhaMunicipio[] {
-  return dataset.municipios.map((m: MunicipioAgregado) => {
-    const suprimido = m.suprimido.includes(cargo);
-    const detalhe = m.intencoes[cargo];
-    const respostas = m.respostas[cargo];
+export const TOTAL_MUNICIPIOS_BA = 417;
 
-    const valor =
-      candidato === TODOS
-        ? respostas
-        : (detalhe.find((d) => d.candidato === candidato)?.qtd ?? 0);
-
-    return {
-      codIbge: m.codIbge,
-      nome: m.nome,
-      equipe: m.equipe,
-      respostas,
-      valor,
-      penetracao: m.equipe === 0 ? 0 : valor / m.equipe,
-      cobertura: m.equipe === 0 ? 0 : respostas / m.equipe,
-      suprimido,
-      foraDaMalha: m.foraDaMalha,
-      detalhe,
-    };
-  });
+function linhaDe(m: MunicipioAgregado, cargo: Cargo): LinhaMunicipio {
+  const respostas = m.respostas[cargo];
+  const coberturaPontos = m.equipe > 0 ? (respostas / m.equipe) * 100 : 0;
+  return {
+    codIbge: m.codIbge,
+    nome: m.nome,
+    equipe: m.equipe,
+    respostas,
+    coberturaPontos,
+    faixa: classificarBase({ equipe: m.equipe, respostas }),
+    rotuloCobertura: faixaCobertura(coberturaPontos),
+    intencoes: m.intencoes[cargo],
+    suprimido: m.suprimido.includes(cargo),
+    foraDaMalha: m.foraDaMalha,
+    ultimaResposta: m.ultimaResposta,
+  };
 }
 
-/** Lista de candidatos do cargo, sem o rótulo "Não sei". */
-export function candidatosDe(dataset: Dataset, cargo: Cargo): string[] {
-  return dataset.candidatos[cargo]
-    .filter((c) => c.candidato !== "Não sei")
-    .map((c) => c.candidato);
+export function construirModelo(dataset: Dataset, cargo: Cargo): Modelo {
+  const linhas = dataset.municipios.map((m) => linhaDe(m, cargo));
+  const naBahia = linhas.filter((l) => !l.foraDaMalha);
+  const comDados = naBahia.filter((l) => l.respostas > 0);
+  const semResposta = linhas
+    .filter((l) => l.equipe > 0 && l.respostas === 0)
+    .sort((a, b) => b.equipe - a.equipe || a.nome.localeCompare(b.nome, "pt-BR"));
+
+  const respostas = dataset.totais.respostas[cargo];
+  const equipeComMunicipio = linhas.reduce((a, l) => a + l.equipe, 0);
+
+  const lider = [...comDados].sort((a, b) => b.respostas - a.respostas)[0];
+
+  return {
+    cargo,
+    linhas,
+    naBahia,
+    comDados,
+    semResposta,
+    foraDaBahia: linhas.filter((l) => l.foraDaMalha),
+    porCodigo: new Map(
+      linhas.filter((l) => l.codIbge !== null).map((l) => [l.codIbge as number, l]),
+    ),
+    equipeTotal: dataset.totais.equipe,
+    equipeComMunicipio,
+    semMunicipio: dataset.semMunicipio.equipe,
+    respostas,
+    respostasSemMunicipio: dataset.semMunicipio.respostas[cargo],
+    coberturaPontos: dataset.totais.cobertura[cargo] * 100,
+    rotuloCobertura: faixaCobertura(dataset.totais.cobertura[cargo] * 100),
+    intencoes: dataset.candidatos[cargo],
+    maiorConcentracao: lider
+      ? {
+          nome: lider.nome,
+          respostas: lider.respostas,
+          parcela: respostas > 0 ? lider.respostas / respostas : 0,
+        }
+      : null,
+    integrantesSemResposta: semResposta.reduce((a, l) => a + l.equipe, 0),
+  };
 }
 
-/**
- * Municípios onde a campanha tem equipe mas ainda não tem resposta.
- * É a lista de trabalho da coordenação: potencial não explorado.
- */
-export function lacunas(linhas: LinhaMunicipio[]): LinhaMunicipio[] {
-  return linhas
-    .filter((l) => l.respostas === 0 && l.equipe > 0)
-    .sort((a, b) => b.equipe - a.equipe);
+/* ── formatação ─────────────────────────────────────────────────────── */
+
+export const numero = (v: number) => v.toLocaleString("pt-BR");
+
+/** Percentual a partir de pontos percentuais (0–100). */
+export function pontosPct(pontos: number, casas = 1): string {
+  return (
+    pontos.toLocaleString("pt-BR", {
+      minimumFractionDigits: casas,
+      maximumFractionDigits: casas,
+    }) + "%"
+  );
 }
 
-export function formatarPct(v: number, casas = 1): string {
-  return `${(v * 100).toFixed(casas).replace(".", ",")}%`;
+export function razaoPct(a: number, b: number, casas = 1): string {
+  return b > 0 ? pontosPct((a / b) * 100, casas) : "0%";
 }
 
-export function formatarNumero(v: number): string {
-  return v.toLocaleString("pt-BR");
-}
+/** Normalização usada só na busca; a junção com a malha é por código IBGE. */
+export const normalizar = (s: string) =>
+  s
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z ]/g, "")
+    .trim();

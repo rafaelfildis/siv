@@ -131,3 +131,51 @@ o protege — quem tiver o link vê tudo. Como o TSE está fora de escopo nesta
 fase, **todo o conteúdo do painel é dado interno da campanha**. O risco é da
 coordenação e está documentado; a mitigação de menor custo, se e quando quiserem,
 é uma senha única no middleware, sem cadastro de usuários.
+
+## 10. Mapa em d3-geo + SVG, no lugar do MapLibre
+
+**Decisão:** o mapa passou a ser um `<svg>` React com `d3-geo` para projeção e
+`d3-zoom` para navegação. O MapLibre saiu do projeto.
+
+**Por quê:** o handoff especifica o mapa em termos de SVG — largura de traço,
+`vector-effect: non-scaling-stroke`, `tabindex` e `role=button` por município,
+tooltip no bounding box ao receber foco por teclado, `<pattern>` de hachura.
+Reproduzir isso sobre MapLibre seria lutar contra a ferramenta: os polígonos
+dele são pintados em WebGL e não são nós de DOM, logo não recebem foco nem
+`aria-label`. Com SVG a acessibilidade sai de graça e o pacote encolhe (o
+MapLibre sozinho pesava mais que todo o resto do bundle).
+
+**Quando reverter:** se o mapa passar a exibir dezenas de milhares de pontos —
+locais de votação do TSE, por exemplo. 417 polígonos em SVG são confortáveis;
+15 mil marcadores não são.
+
+## 11. Faixas e camadas como dados, não como `if` no JSX
+
+**Decisão:** `src/lib/faixas.ts` e `src/lib/camadas.ts` guardam as regras de
+classificação e as funções de preenchimento; os componentes só consomem.
+
+**Por quê:** o handoff exige que as faixas sejam configuráveis, e classificação
+de dado eleitoral espalhada por JSX é impossível de testar. Assim dá para
+escrever o teste que realmente importa: percorrer as seis camadas e falhar se
+alguma pintar "sem equipe" e "sem resposta" com a mesma cor.
+
+## 12. Saída do índice de Gini
+
+**Decisão:** o Gini foi removido do painel. A concentração territorial agora é
+dita em texto direto: "79% das respostas vêm de um único município (Salvador).
+A leitura atual não representa o interior do estado."
+
+**Por quê:** é o que o handoff especifica, e é melhor. O Gini exigia uma nota
+de rodapé explicando a escala e, com um único município pontuado, precisava de
+um caso especial para não dizer "distribuição uniforme" — o oposto da verdade.
+A frase direta não tem nenhum desses problemas e responde à mesma pergunta.
+
+## 13. Coluna "Última resposta" sem dado
+
+**Decisão:** a coluna existe na tabela e mostra "—" em todas as linhas. O campo
+`ultimaResposta` está no contrato e a ingestão o preenche com `null`.
+
+**Por quê:** a planilha não tem coluna de data. Manter o campo no contrato custa
+nada e faz a coluna acender sozinha no dia em que a planilha ganhar a data —
+sem migração de schema nem alteração de componente. O "—" é o valor honesto
+para ausente, e o handoff prevê exatamente isso.

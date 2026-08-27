@@ -148,6 +148,8 @@ export function agregar(
         intencoes,
         suprimido,
         foraDaMalha: acc.foraDaMalha,
+        // A planilha não traz data de resposta. Ver tipos.ts.
+        ultimaResposta: null,
       };
     })
     .sort((a, b) => b.equipe - a.equipe || a.nome.localeCompare(b.nome, "pt-BR"));
@@ -182,49 +184,4 @@ export function agregar(
   };
 
   return { dataset, avisos };
-}
-
-/**
- * Índice de Gini da distribuição entre os municípios.
- * 0 = perfeitamente distribuído; 1 = tudo num único município.
- *
- * Atenção ao caso de um município só: o Gini de um único valor é 0, porque não
- * há desigualdade entre um elemento e ele mesmo. Exibir esse 0 como
- * "distribuição uniforme" diz exatamente o oposto da realidade. Use
- * `concentracao()` para apresentar o número — ela trata esse caso.
- */
-export function gini(valores: number[]): number {
-  const v = valores.filter((x) => x > 0).sort((a, b) => a - b);
-  const n = v.length;
-  if (n === 0) return 0;
-  const soma = v.reduce((a, b) => a + b, 0);
-  if (soma === 0) return 0;
-  let acumulado = 0;
-  for (let i = 0; i < n; i++) acumulado += (2 * (i + 1) - n - 1) * v[i];
-  return acumulado / (n * soma);
-}
-
-/**
- * Resultado apresentável do índice de concentração.
- *
- * Com menos de dois municípios pontuados, o Gini não é interpretável e o
- * painel mostra o fato em vez de um número enganoso.
- */
-export type Concentracao =
-  | { tipo: "indice"; valor: number; municipios: number }
-  | { tipo: "municipio_unico"; nome: string }
-  | { tipo: "sem_dados" };
-
-export function concentracao(
-  entradas: { nome: string; valor: number }[],
-): Concentracao {
-  const pontuados = entradas.filter((e) => e.valor > 0);
-  if (pontuados.length === 0) return { tipo: "sem_dados" };
-  if (pontuados.length === 1)
-    return { tipo: "municipio_unico", nome: pontuados[0].nome };
-  return {
-    tipo: "indice",
-    valor: gini(pontuados.map((e) => e.valor)),
-    municipios: pontuados.length,
-  };
 }

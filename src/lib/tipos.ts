@@ -66,6 +66,14 @@ export const MunicipioAgregado = z.object({
   suprimido: z.array(z.enum(CARGOS)),
   /** true quando o nome não corresponde a nenhum município da malha da Bahia. */
   foraDaMalha: z.boolean(),
+  /**
+   * Data ISO da resposta mais recente do município.
+   *
+   * A planilha atual não tem coluna de data, então isto é sempre null e a
+   * tabela mostra "—". O campo existe porque o contrato do painel prevê a
+   * coluna: no dia em que a planilha ganhar a data, a coluna acende sozinha.
+   */
+  ultimaResposta: z.string().nullable(),
 });
 export type MunicipioAgregado = z.infer<typeof MunicipioAgregado>;
 
