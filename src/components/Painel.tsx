@@ -9,7 +9,7 @@ import {
   linhasPara,
   TODOS,
 } from "@/lib/consultas";
-import { gini } from "@/lib/agregacao";
+import { concentracao } from "@/lib/agregacao";
 import { corDe, rampa, RAMPA_NEUTRA } from "@/lib/paleta";
 import { ROTULO_CARGO, type Cargo, type Dataset } from "@/lib/tipos";
 import Indicadores from "./Indicadores";
@@ -44,7 +44,7 @@ export default function Painel({ dataset, malha }: Props) {
   const noMapa = linhas.filter((l) => !l.foraDaMalha);
   const municipiosComEquipe = noMapa.length;
   const municipiosComResposta = noMapa.filter((l) => l.respostas > 0).length;
-  const concentracao = gini(noMapa.map((l) => l.valor));
+  const conc = concentracao(noMapa.map((l) => ({ nome: l.nome, valor: l.valor })));
 
   // Ao filtrar por candidato, a rampa do mapa assume a cor dele.
   const corBase = candidato ? corDe(candidato) : null;
@@ -156,11 +156,25 @@ export default function Painel({ dataset, malha }: Props) {
               />
               {candidatos.length > 0 && (
                 <p className="mt-3 border-t border-linha pt-2.5 text-xs text-ardosia-400">
-                  Concentração territorial (Gini):{" "}
-                  <strong className="numerico text-ardosia">
-                    {concentracao.toFixed(2).replace(".", ",")}
-                  </strong>{" "}
-                  — 0 é distribuição uniforme, 1 é tudo num município só.
+                  {conc.tipo === "indice" ? (
+                    <>
+                      Concentração territorial (Gini):{" "}
+                      <strong className="numerico text-ardosia">
+                        {conc.valor.toFixed(2).replace(".", ",")}
+                      </strong>{" "}
+                      entre {conc.municipios} municípios — 0 é distribuição
+                      uniforme, 1 é tudo num município só.
+                    </>
+                  ) : conc.tipo === "municipio_unico" ? (
+                    <>
+                      Concentração máxima: toda a votação declarada está em{" "}
+                      <strong className="text-ardosia">{conc.nome}</strong>. Com um
+                      único município pontuado, o índice de Gini não é
+                      interpretável.
+                    </>
+                  ) : (
+                    <>Sem respostas suficientes para calcular concentração.</>
+                  )}
                 </p>
               )}
             </section>

@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { agregar, gini, LIMIAR_SUPRESSAO_PADRAO } from "../src/lib/agregacao";
+import {
+  agregar,
+  concentracao,
+  gini,
+  LIMIAR_SUPRESSAO_PADRAO,
+} from "../src/lib/agregacao";
 import { construirIndice } from "../src/lib/normalizacao";
 import type { LinhaBruta } from "../src/lib/tipos";
 
@@ -150,5 +155,34 @@ describe("gini", () => {
   it("não quebra com lista vazia ou só zeros", () => {
     expect(gini([])).toBe(0);
     expect(gini([0, 0])).toBe(0);
+  });
+});
+
+describe("concentracao", () => {
+  it("não apresenta Gini quando só um município pontuou", () => {
+    // O Gini cru daria 0,00 e o painel leria "distribuição uniforme" — o
+    // oposto da verdade, que é concentração total num município.
+    const r = concentracao([
+      { nome: "Salvador", valor: 9 },
+      { nome: "Jequié", valor: 0 },
+    ]);
+    expect(r).toEqual({ tipo: "municipio_unico", nome: "Salvador" });
+  });
+
+  it("apresenta o índice a partir de dois municípios pontuados", () => {
+    const r = concentracao([
+      { nome: "Salvador", valor: 19 },
+      { nome: "Vitória da Conquista", valor: 4 },
+    ]);
+    expect(r.tipo).toBe("indice");
+    if (r.tipo === "indice") {
+      expect(r.municipios).toBe(2);
+      expect(r.valor).toBeGreaterThan(0);
+    }
+  });
+
+  it("distingue ausência de dados de concentração", () => {
+    expect(concentracao([{ nome: "Jequié", valor: 0 }])).toEqual({ tipo: "sem_dados" });
+    expect(concentracao([])).toEqual({ tipo: "sem_dados" });
   });
 });
