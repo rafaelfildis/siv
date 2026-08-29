@@ -33,5 +33,23 @@
       "Município \"Asia\" não corresponde a nenhum dos 417 municípios da Bahia; mantido nos totais, ausente do mapa.",
       "Município \"Brasília\" não corresponde a nenhum dos 417 municípios da Bahia; mantido nos totais, ausente do mapa."
     ]
+  },
+  {
+    "id": "d0ddc33c-db1b-4a44-a1d6-64f35093fea4",
+    "fonte": "MAPEAMENTO.xlsx",
+    "sha256": "531121b56ee09df9c1d8ea2e827f62a8580e55bf96136544c87ef271626bfa2b",
+    "iniciadoEm": "2026-08-29T16:27:56.343Z",
+    "concluidoEm": "2026-08-29T16:27:56.501Z",
+    "status": "sucesso",
+    "linhasLidas": 266,
+    "linhasValidas": 262,
+    "linhasRejeitadas": 0,
+    "linhasAncora": 4,
+    "avisos": [
+      "Aba lida: \"Mapeamento SD\" (casada pelo prefixo \"Mapeamento\").",
+      "4 linha(s)-âncora de filtro descartada(s): não são profissionais e seus votos de exemplo não entram na apuração.",
+      "Município \"Asia\" não corresponde a nenhum dos 417 municípios da Bahia; mantido nos totais, ausente do mapa.",
+      "Município \"Brasília\" não corresponde a nenhum dos 417 municípios da Bahia; mantido nos totais, ausente do mapa."
+    ]
   }
 ]

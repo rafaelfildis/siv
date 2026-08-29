@@ -1,38 +1,38 @@
 {
-  "geradoEm": "2026-08-27T19:59:33.964Z",
+  "geradoEm": "2026-08-29T16:27:56.491Z",
   "fonte": "MAPEAMENTO.xlsx",
-  "sha256": "711dc538cdf9fc18ed8fab0093a0fdb4e14669d508f1811b5fb6561c0f8557d6",
+  "sha256": "531121b56ee09df9c1d8ea2e827f62a8580e55bf96136544c87ef271626bfa2b",
   "limiarSupressao": 3,
   "totais": {
     "equipe": 262,
     "respostas": {
-      "estadual": 41,
-      "federal": 36
+      "estadual": 49,
+      "federal": 44
     },
     "cobertura": {
-      "estadual": 0.15648854961832062,
-      "federal": 0.13740458015267176
+      "estadual": 0.18702290076335878,
+      "federal": 0.16793893129770993
     }
   },
   "candidatos": {
     "estadual": [
       {
         "candidato": "Fabíola Mansur",
-        "qtd": 33
-      },
-      {
-        "candidato": "Não sei",
-        "qtd": 4
+        "qtd": 40
       },
       {
         "candidato": "OUTROS",
+        "qtd": 5
+      },
+      {
+        "candidato": "Não sei",
         "qtd": 4
       }
     ],
     "federal": [
       {
         "candidato": "Lucas Reis",
-        "qtd": 15
+        "qtd": 22
       },
       {
         "candidato": "Jorge Solla",
@@ -44,7 +44,7 @@
       },
       {
         "candidato": "OUTROS",
-        "qtd": 3
+        "qtd": 4
       }
     ]
   },
@@ -52,16 +52,34 @@
     {
       "codIbge": 2927408,
       "nome": "Salvador",
-      "equipe": 187,
+      "equipe": 188,
       "respostas": {
-        "estadual": 34,
-        "federal": 29
+        "estadual": 43,
+        "federal": 38
       },
       "intencoes": {
         "estadual": [
           {
             "candidato": "Fabíola Mansur",
-            "qtd": 27
+            "qtd": 35
+          },
+          {
+            "candidato": "Não sei",
+            "qtd": 4
+          },
+          {
+            "candidato": "OUTROS",
+            "qtd": 4
+          }
+        ],
+        "federal": [
+          {
+            "candidato": "Lucas Reis",
+            "qtd": 17
+          },
+          {
+            "candidato": "Jorge Solla",
+            "qtd": 14
           },
           {
             "candidato": "Não sei",
@@ -70,24 +88,6 @@
           {
             "candidato": "OUTROS",
             "qtd": 3
-          }
-        ],
-        "federal": [
-          {
-            "candidato": "Jorge Solla",
-            "qtd": 13
-          },
-          {
-            "candidato": "Lucas Reis",
-            "qtd": 10
-          },
-          {
-            "candidato": "Não sei",
-            "qtd": 4
-          },
-          {
-            "candidato": "OUTROS",
-            "qtd": 2
           }
         ]
       },
@@ -299,10 +299,10 @@
     }
   ],
   "semMunicipio": {
-    "equipe": 31,
+    "equipe": 30,
     "respostas": {
-      "estadual": 3,
-      "federal": 3
+      "estadual": 2,
+      "federal": 2
     }
   }
 }

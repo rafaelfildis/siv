@@ -10,9 +10,12 @@ describe("construirModelo com os dados reais da base", () => {
   const fed = construirModelo(dataset, "federal");
 
   it("bate com os totais da aba Painel da planilha", () => {
+    // Conferidos um a um contra a aba "Painel" da planilha de origem. São os
+    // únicos números cravados da suíte, e é de propósito: se a ingestão passar
+    // a divergir da conferência da própria base, este teste tem que quebrar.
     expect(est.equipeTotal).toBe(262);
-    expect(est.respostas).toBe(41);
-    expect(fed.respostas).toBe(36);
+    expect(est.respostas).toBe(49);
+    expect(fed.respostas).toBe(44);
   });
 
   it("fecha equipe com município + sem município", () => {
@@ -34,9 +37,18 @@ describe("construirModelo com os dados reais da base", () => {
   });
 
   it("mede concentração no município líder", () => {
+    // Contagem derivada do dataset, como na cobertura abaixo: cravar aqui faria
+    // o teste quebrar a cada reingestão sem indicar defeito. O que importa é a
+    // relação — o líder é o município de mais respostas e a parcela é a fatia
+    // dele no total.
+    const salvador = est.comDados.find((l) => l.nome === "Salvador");
+    expect(salvador).toBeDefined();
     expect(est.maiorConcentracao?.nome).toBe("Salvador");
-    expect(est.maiorConcentracao?.respostas).toBe(34);
-    expect(est.maiorConcentracao?.parcela).toBeCloseTo(34 / 41, 6);
+    expect(est.maiorConcentracao?.respostas).toBe(salvador?.respostas);
+    expect(est.maiorConcentracao?.parcela).toBeCloseTo(
+      (salvador?.respostas ?? 0) / est.respostas,
+      6,
+    );
   });
 
   it("soma integrantes das localidades sem nenhuma resposta", () => {
