@@ -22,6 +22,7 @@ para no nível de **município** — sem zona eleitoral, sem seção.
 | Diagnóstico territorial e atenção operacional | pronto |
 | Ranking, tabela ordenável e drawer por município | pronto |
 | Busca de município com zoom | pronto |
+| Exportação da tela em PDF, um arquivo por cargo | pronto |
 | Resultados oficiais do TSE | fora do escopo desta fase |
 | Zona e seção eleitoral | fora do escopo desta fase |
 | Autenticação e perfis de acesso | fora do escopo desta fase |
@@ -67,6 +68,39 @@ então **o build da Vercel não precisa da planilha nem de banco de dados**.
 
 Para atualizar os números: rode `npm run ingerir` localmente, faça commit do
 `src/dados/dataset.json` alterado e dê push. A Vercel reconstrói sozinha.
+
+---
+
+## Exportação em PDF
+
+O botão **Exportar PDF** no cabeçalho gera um PDF da tela inteira do cargo
+ativo. Para ter os dois, exporta-se duas vezes: o seletor troca o cargo e o
+botão gera o segundo arquivo. O navegador sugere o nome já com o cargo e a data
+do recorte — `SIV-painel-estadual-2026-09-02.pdf` —, inclusive quando a
+impressão é disparada por `Ctrl+P` em vez do botão. A data é a de `geradoEm`,
+não a do clique: dois exportes do mesmo recorte produzem o mesmo arquivo.
+
+É `window.print()` sobre a folha `@media print` de `globals.css`, não
+rasterização de tela. A diferença importa: o mapa é SVG e sai vetorial, nítido
+em qualquer zoom; o texto continua selecionável e pesquisável; e o bundle não
+ganha dependência nenhuma — html2canvas mais jsPDF custariam cerca de meio
+megabyte para entregar um resultado pior. A feature inteira custou 1,1 kB.
+
+O que muda do monitor para o papel:
+
+- **Cabeçalho e rodapé próprios.** O PDF circula fora do sistema, então declara
+  o cargo por extenso, a cobertura, o tamanho da amostra, a origem da base e a
+  data de agregação — a mesma informação que saiu do rodapé da tela em 667ff92
+  por não ser consultada ali, e que no papel é o que impede o número de ser
+  lido errado. O rodapé marca o documento como interno e explica a supressão.
+- **Arranjo empilhado.** A coluna lateral é mais alta que uma folha A4 deitada;
+  mantida ao lado do mapa, nenhuma página comportava a linha e o documento saía
+  com 6 páginas semivazias. Empilhado são 4, sem perder nada, e o mapa ganha a
+  largura toda.
+- **Sem controles.** Busca, seletor de cargo, botões de zoom, abas do ranking,
+  filtro da tabela e drawer não vão para o papel. O recorte que o filtro produz,
+  sim: a tabela o declara em texto, para que um PDF filtrado não passe por
+  completo.
 
 ---
 
@@ -156,6 +190,7 @@ src/lib/agregacao.ts        agregação e supressão por baixa contagem
 src/lib/faixas.ts           faixas de base e de cobertura (configuráveis)
 src/lib/camadas.ts          as 6 camadas do mapa e suas legendas
 src/lib/consultas.ts        modelo derivado que alimenta todos os blocos
+src/lib/exportacao.ts       nome do arquivo e carimbos do PDF exportado
 src/components/             header, KPIs, mapa, diagnóstico, ranking, tabela, drawer
 src/dados/                  dataset agregado + malha + log de importação
 ```

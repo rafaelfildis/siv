@@ -115,10 +115,10 @@ export default function TabelaMunicipios({
   const comEquipeBA = modelo.naBahia.filter((l) => l.equipe > 0).length;
 
   return (
-    <section className="card">
+    <section className="card card-tabela">
       <div className="card-head">
         <h2>Exploração municipal</h2>
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="nao-imprimir flex flex-wrap items-center gap-3">
           <input
             type="search"
             value={filtro}
@@ -138,7 +138,19 @@ export default function TabelaMunicipios({
         </div>
       </div>
 
-      <div className="max-h-[520px] overflow-auto">
+      {/*
+        Os controles não vão para o PDF, então o recorte que eles produzem
+        precisa estar escrito: uma tabela de três linhas sem dizer que há um
+        filtro ativo é um documento que induz a erro.
+      */}
+      <p className="apenas-impressao ci-recorte">
+        {filtro ? <>Filtro ativo: “{filtro}” · </> : null}
+        {incluirSemEquipe
+          ? "inclui municípios sem equipe identificada"
+          : "apenas municípios com equipe mapeada"}
+      </p>
+
+      <div className="tabela-rolagem max-h-[520px] overflow-auto">
         <table className="w-full text-[13px]">
           <thead className="sticky top-0 z-10 bg-surface-2">
             <tr>
@@ -225,7 +237,8 @@ export default function TabelaMunicipios({
         {linhas.length === 1 ? "linha" : "linhas"} ·{" "}
         <span className="num">{comEquipeBA}</span> municípios da Bahia com equipe ·{" "}
         <span className="num">{TOTAL_MUNICIPIOS_BA - comEquipeBA}</span> sem equipe
-        identificada · clique numa linha para abrir o município
+        identificada
+        <span className="nao-imprimir"> · clique numa linha para abrir o município</span>
       </p>
     </section>
   );

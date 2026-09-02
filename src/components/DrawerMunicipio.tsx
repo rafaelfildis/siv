@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { numero, razaoPct, type LinhaMunicipio, type Modelo } from "@/lib/consultas";
 import { amostraPequena } from "@/lib/faixas";
-import { ROTULO_CARGO } from "@/lib/tipos";
+import { ROTULO_CARGO, ROTULO_CARGO_CURTO } from "@/lib/tipos";
 import { corDe } from "./Diagnostico";
 
 function Bloco({ titulo, children }: { titulo: string; children: React.ReactNode }) {
@@ -58,7 +58,7 @@ export default function DrawerMunicipio({
       <div
         onClick={aoFechar}
         aria-hidden
-        className={`fixed inset-0 z-40 bg-[rgba(12,39,64,.32)] transition-opacity duration-200 ${
+        className={`nao-imprimir fixed inset-0 z-40 bg-[rgba(12,39,64,.32)] transition-opacity duration-200 ${
           aberto ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
       />
@@ -67,7 +67,7 @@ export default function DrawerMunicipio({
         aria-modal="true"
         aria-hidden={!aberto}
         aria-labelledby="drawer-titulo"
-        className="fixed right-0 top-0 z-50 flex h-full w-[428px] max-w-[92vw] flex-col overflow-y-auto bg-surface shadow-[-8px_0_32px_rgba(12,39,64,.18)] transition-transform duration-[240ms] ease-[cubic-bezier(.4,0,.2,1)]"
+        className="nao-imprimir fixed right-0 top-0 z-50 flex h-full w-[428px] max-w-[92vw] flex-col overflow-y-auto bg-surface shadow-[-8px_0_32px_rgba(12,39,64,.18)] transition-transform duration-[240ms] ease-[cubic-bezier(.4,0,.2,1)]"
         style={{ transform: aberto ? "none" : "translateX(100%)" }}
       >
         {linha && (
@@ -197,7 +197,7 @@ export default function DrawerMunicipio({
               <dl className="flex flex-col gap-1.5 text-[12.5px]">
                 {[
                   [
-                    "Cobertura estadual",
+                    `Cobertura · ${ROTULO_CARGO_CURTO[modelo.cargo]}`,
                     `${modelo.coberturaPontos.toFixed(1).replace(".", ",")}%`,
                   ],
                   [

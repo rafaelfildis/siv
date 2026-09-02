@@ -4,7 +4,7 @@ import {
   TOTAL_MUNICIPIOS_BA,
   type Modelo,
 } from "@/lib/consultas";
-import { ROTULO_CARGO } from "@/lib/tipos";
+import { ROTULO_CARGO_CURTO } from "@/lib/tipos";
 
 /**
  * Cinco indicadores executivos. O quinto é de atenção (variante âmbar): ele
@@ -36,7 +36,7 @@ export default function Kpis({ modelo }: { modelo: Modelo }) {
       ),
     },
     {
-      rotulo: `Cobertura · ${ROTULO_CARGO[modelo.cargo].replace("Deputado ", "")}`,
+      rotulo: `Cobertura · ${ROTULO_CARGO_CURTO[modelo.cargo]}`,
       valor: pontosPct(modelo.coberturaPontos),
       sub: (
         <>
@@ -76,7 +76,7 @@ export default function Kpis({ modelo }: { modelo: Modelo }) {
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
+    <div className="grade-kpis grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
       {cartoes.map((c) => (
         <div
           key={c.rotulo}

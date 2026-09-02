@@ -97,8 +97,17 @@ export default function RankingTerritorial({
   return (
     <section className="card">
       <div className="card-head">
-        <h2>Inteligência territorial</h2>
-        <div className="flex flex-wrap gap-1" role="tablist" aria-label="Ranking por">
+        <h2>
+          Inteligência territorial
+          {/* No papel as abas somem, e sem isto a lista fica sem dizer de que
+              ranking é. */}
+          <span className="apenas-impressao ci-aba">{conf.rotulo}</span>
+        </h2>
+        <div
+          className="nao-imprimir flex flex-wrap gap-1"
+          role="tablist"
+          aria-label="Ranking por"
+        >
           {(Object.keys(ABAS) as ChaveAba[]).map((k) => (
             <button
               key={k}
@@ -120,7 +129,7 @@ export default function RankingTerritorial({
           Nenhum município atende ao critério desta aba nesta importação.
         </p>
       ) : (
-        <ol className="grid grid-cols-1 gap-x-7 px-4 py-1 lg:grid-cols-2">
+        <ol className="ranking-lista grid grid-cols-1 gap-x-7 px-4 py-1 lg:grid-cols-2">
           {itens.map((it, i) => (
             <li
               key={it.linha.nome}
@@ -160,7 +169,7 @@ export default function RankingTerritorial({
         <button
           type="button"
           onClick={aoVerTodos}
-          className="rounded-[var(--r-sm)] border border-border px-2.5 py-1 text-xs font-medium text-text-2 hover:bg-surface-2"
+          className="nao-imprimir rounded-[var(--r-sm)] border border-border px-2.5 py-1 text-xs font-medium text-text-2 hover:bg-surface-2"
         >
           Ver todos os municípios
         </button>

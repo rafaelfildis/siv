@@ -12,6 +12,19 @@ export const ROTULO_CARGO: Record<Cargo, string> = {
 };
 
 /**
+ * Forma curta, para rótulo de figura ("Cobertura · Federal").
+ *
+ * Existe como constante porque a alternativa que estava em uso — recortar
+ * "Deputado " do rótulo longo em cada componente — deixou o diagnóstico e o
+ * drawer com "estadual" cravado, exibindo "Cobertura estadual" ao lado de
+ * "Cobertura · Federal" para o mesmo número.
+ */
+export const ROTULO_CARGO_CURTO: Record<Cargo, string> = {
+  estadual: "Estadual",
+  federal: "Federal",
+};
+
+/**
  * Rótulos de resposta que não são candidatos nominais.
  *
  * Contam como resposta — entram na cobertura e no denominador dos

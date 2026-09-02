@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { normalizar } from "@/lib/consultas";
 import { CARGOS, ROTULO_CARGO, type Cargo } from "@/lib/tipos";
 import type { MalhaBahia } from "@/lib/malha";
+import BotaoExportarPdf from "./BotaoExportarPdf";
 
 type Sugestao = { codIbge: number; nome: string };
 
@@ -21,11 +22,14 @@ export default function AppHeader({
   aoTrocarCargo,
   malha,
   aoEscolherMunicipio,
+  geradoEm,
 }: {
   cargo: Cargo;
   aoTrocarCargo: (c: Cargo) => void;
   malha: MalhaBahia;
   aoEscolherMunicipio: (codIbge: number) => void;
+  /** Marca de agregação do dataset: vai para o nome do arquivo exportado. */
+  geradoEm: string;
 }) {
   const [termo, setTermo] = useState("");
   const [aberto, setAberto] = useState(false);
@@ -169,6 +173,8 @@ export default function AppHeader({
               </button>
             ))}
           </div>
+
+          <BotaoExportarPdf cargo={cargo} geradoEm={geradoEm} />
         </div>
       </div>
     </header>

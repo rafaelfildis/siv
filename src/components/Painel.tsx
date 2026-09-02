@@ -13,6 +13,7 @@ import AtencaoOperacional from "./AtencaoOperacional";
 import RankingTerritorial from "./RankingTerritorial";
 import TabelaMunicipios from "./TabelaMunicipios";
 import DrawerMunicipio from "./DrawerMunicipio";
+import { CabecalhoImpressao, RodapeImpressao } from "./CabecalhoImpressao";
 
 // O mapa usa medidas do DOM e d3-zoom: só no cliente.
 const Mapa = dynamic(() => import("./Mapa"), {
@@ -128,9 +129,12 @@ export default function Painel({
           zoomPara(cod);
           abrirPorCodigo(cod);
         }}
+        geradoEm={dataset.geradoEm}
       />
 
       <main className="mx-auto flex max-w-[1440px] flex-col gap-3 px-5 py-3 pb-12">
+        <CabecalhoImpressao cargo={cargo} modelo={modelo} dataset={dataset} />
+
         <Kpis modelo={modelo} />
 
         {/*
@@ -138,7 +142,7 @@ export default function Painel({
           dois cartões entrem na ordenação do pai e a leitura fique
           KPIs -> Diagnóstico -> Mapa -> Atenção operacional (handoff, §responsividade).
         */}
-        <div className="flex flex-col items-start gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_372px]">
+        <div className="grade-painel flex flex-col items-start gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_372px]">
           <div className="order-2 w-full lg:order-1 lg:h-full">
             <Mapa
               malha={malha}
@@ -181,6 +185,8 @@ export default function Painel({
             setFiltro={setFiltroTabela}
           />
         </div>
+
+        <RodapeImpressao dataset={dataset} />
       </main>
 
       <DrawerMunicipio

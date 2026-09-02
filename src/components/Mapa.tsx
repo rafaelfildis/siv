@@ -120,7 +120,11 @@ export default function Mapa({
     <section className="card flex h-full flex-col">
       <div className="card-head">
         <h2>Bahia · {TOTAL_MUNICIPIOS_BA} municípios</h2>
-        <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label="Visualizar por">
+        <div
+          className="nao-imprimir flex flex-wrap items-center gap-1.5"
+          role="group"
+          aria-label="Visualizar por"
+        >
           {ORDEM_CAMADAS.map((k) => (
             <button
               key={k}
@@ -140,7 +144,7 @@ export default function Mapa({
       </div>
 
       <div
-        className="relative flex-1 overflow-hidden"
+        className="mapa-area relative flex-1 overflow-hidden"
         style={{ minHeight: "clamp(400px, calc(100vh - 268px), 600px)" }}
       >
         <svg
@@ -214,7 +218,7 @@ export default function Mapa({
 
         <Legenda camada={camada} modelo={modelo} />
 
-        <div className="absolute right-3.5 top-3.5 flex flex-col gap-1">
+        <div className="nao-imprimir absolute right-3.5 top-3.5 flex flex-col gap-1">
           {[
             { r: "+", t: "Aproximar", f: () => escalar(1.6) },
             { r: "−", t: "Afastar", f: () => escalar(1 / 1.6) },

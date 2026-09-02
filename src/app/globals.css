@@ -124,3 +124,151 @@ body{
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important}
 }
+
+/* ── exportação em PDF ────────────────────────────────────────────────
+ * O "Exportar PDF" do cabeçalho é window.print() sobre estas regras. Saída
+ * vetorial: o mapa é SVG e sai nítido em qualquer zoom, o texto continua
+ * selecionável e pesquisável, e o bundle não ganha nenhuma dependência —
+ * html2canvas + jsPDF custariam meio megabyte para entregar um raster pior.
+ *
+ * Um arquivo por cargo: o PDF espelha a tela do cargo ativo no momento do
+ * clique. O nome do arquivo sai de nomeArquivoPdf() em src/lib/exportacao.ts.
+ * ------------------------------------------------------------------- */
+
+/* Blocos que só existem no papel (cabeçalho, rodapé, recorte da tabela). */
+.apenas-impressao{display:none}
+
+@media print{
+  /*
+   * A4 deitado. O painel é de duas colunas e, em retrato, mapa e coluna
+   * lateral ficariam estreitos a ponto de a legenda cobrir o coroplético.
+   */
+  @page{size:A4 landscape;margin:9mm}
+
+  /*
+   * Sem isto o Chrome descarta cor de fundo na impressão: o mapa sairia
+   * inteiramente branco e as faixas dos badges perderiam o significado que
+   * a cor carrega. Num painel em que cor É dado, isso não é economia de
+   * tinta — é perda de informação.
+   */
+  html,body{
+    background:#fff!important;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;
+  }
+
+  .apenas-impressao{display:block}
+  .nao-imprimir{display:none!important}
+
+  /* O cabeçalho fixo sai; .bloco-impressao o substitui, com o cargo escrito. */
+  header.sticky{display:none!important}
+
+  main{max-width:none!important;padding:0!important;gap:7px!important}
+
+  /* Cartão inteiro na mesma página sempre que couber. */
+  .card{
+    break-inside:avoid;box-shadow:none!important;
+    border-color:#D5DBE2!important;
+  }
+  /*
+   * A tabela é a exceção: é o inventário completo e pode passar de uma
+   * página. Mantê-la indivisível só a empurraria inteira para a folha
+   * seguinte, deixando um vão. Ela quebra, o cabeçalho se repete e as linhas
+   * é que ficam inteiras.
+   */
+  .card-tabela{break-inside:auto!important}
+
+  /*
+   * Empilhado no papel, não em duas colunas como na tela.
+   *
+   * A coluna lateral (diagnóstico + atenção operacional) é mais alta que uma
+   * folha A4 deitada. Mantendo o par lado a lado, nenhuma página comportava a
+   * linha inteira: o documento saía com 6 páginas, o cabeçalho sozinho na
+   * primeira, o mapa sozinho na segunda e o rodapé sozinho na última. Nada se
+   * perde ao empilhar — a mesma informação, na ordem da tela, em páginas
+   * cheias. O mapa ganha a largura toda e sai maior do que sairia na coluna.
+   */
+  .grade-painel{
+    display:flex!important;flex-direction:column!important;gap:7px!important;
+  }
+  .grade-painel>*{width:100%!important;order:0!important;height:auto!important}
+  /* Diagnóstico e atenção operacional lado a lado, sob o mapa. */
+  .grade-painel>*:last-child{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:7px!important;align-items:start!important;
+  }
+
+  /* Cinco KPIs numa linha; em duas colunas o bloco ocuparia meia página. */
+  .grade-kpis{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+
+  /*
+   * Altura cravada, e `flex:none` junto: clamp() com 100vh não significa nada
+   * em papel, e sozinho o `height` era ignorado — o cartão é flex e o
+   * `flex-1` da área do mapa impõe `flex-basis:0%`, que vence a altura no
+   * eixo principal. Sem isto o mapa saía com 603px (o aspecto natural do
+   * viewBox sobre a largura toda) e empurrava o conjunto para fora da
+   * primeira página.
+   *
+   * Em 100mm sobre a largura da folha, o viewBox 980x560 renderiza a
+   * ~175x100mm — bem maior que os 129mm que sairiam na coluna estreita do
+   * arranjo de tela — e cabeçalho, KPIs e mapa cabem na primeira página.
+   */
+  .mapa-area{flex:none!important;min-height:0!important;height:100mm!important}
+
+  .ranking-lista{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+
+  /*
+   * A gaiola de rolagem vira altura livre: barra de rolagem em PDF é linha
+   * cortada, e a tabela é o inventário que justifica exportar o painel.
+   */
+  .tabela-rolagem{max-height:none!important;overflow:visible!important}
+  .tabela-rolagem thead{position:static!important}
+  /* Cabeçalho da tabela repetido a cada página que ela ocupar. */
+  .tabela-rolagem thead{display:table-header-group}
+  .tabela-rolagem tr{break-inside:avoid}
+
+  /* ── blocos exclusivos do papel ── */
+  .bloco-impressao{
+    border:1px solid #D5DBE2;border-radius:var(--r-md);
+    padding:9px 12px;background:#fff;break-inside:avoid;
+  }
+  .ci-topo{
+    display:flex;align-items:flex-start;justify-content:space-between;
+    gap:16px;border-bottom:1px solid var(--border);padding-bottom:7px;
+  }
+  .ci-marca{
+    margin:0;font-size:10.5px;font-weight:600;letter-spacing:.09em;
+    text-transform:uppercase;color:var(--red-7);
+  }
+  .ci-titulo{margin:1px 0 0;font-size:17px;font-weight:600;letter-spacing:-.02em}
+  .ci-escopo{
+    margin:0;text-align:right;font-size:11px;color:var(--text-2);
+    display:flex;flex-direction:column;
+  }
+  .ci-escopo span{color:var(--text-3)}
+  .ci-dados{
+    display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:4px 18px;margin:7px 0 0;
+  }
+  .ci-dados dt{
+    font-size:9.5px;font-weight:600;letter-spacing:.07em;
+    text-transform:uppercase;color:var(--text-3);
+  }
+  .ci-dados dd{margin:1px 0 0;font-size:11.5px;color:var(--text-2)}
+  .ci-dados dd b{color:var(--figura);font-weight:600}
+
+  /* Nome da aba de ranking ativa, que perde o tablist no papel. */
+  .ci-aba{
+    display:inline;margin-left:7px;font-size:12px;font-weight:500;
+    color:var(--text-3);
+  }
+  /* Recorte declarado da tabela, no lugar dos controles. */
+  .ci-recorte{
+    margin:0;padding:6px 14px 0;font-size:11px;color:var(--text-3);
+  }
+
+  .ri{margin-top:2px}
+  .ri p{margin:0;font-size:10px;line-height:1.4;color:var(--text-3)}
+  .ri p+p{margin-top:3px}
+  .ri b{color:var(--text-2)}
+}

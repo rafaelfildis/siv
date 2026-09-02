@@ -5,7 +5,7 @@ import {
   TOTAL_MUNICIPIOS_BA,
   type Modelo,
 } from "@/lib/consultas";
-import { ROTULO_CARGO } from "@/lib/tipos";
+import { ROTULO_CARGO, ROTULO_CARGO_CURTO } from "@/lib/tipos";
 
 const CORES_CANDIDATO: Record<string, string> = {
   "Fabíola Mansur": "#0F7A55",
@@ -73,7 +73,7 @@ export default function Diagnostico({ modelo }: { modelo: Modelo }) {
         )}
       </Bloco>
 
-      <Bloco titulo="Cobertura estadual">
+      <Bloco titulo={`Cobertura · ${ROTULO_CARGO_CURTO[modelo.cargo]}`}>
         <div className="flex items-baseline gap-2">
           <span className="num text-2xl font-semibold text-figura">
             {pontosPct(modelo.coberturaPontos)}
@@ -154,7 +154,7 @@ export default function Diagnostico({ modelo }: { modelo: Modelo }) {
           ))}
         </ul>
         <p className="mt-2.5 text-[11.5px] leading-snug text-text-3">
-          Contam na cobertura estadual, mas não podem ser localizados no mapa.
+          Contam na cobertura, mas não podem ser localizados no mapa.
         </p>
       </Bloco>
     </section>
