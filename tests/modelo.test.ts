@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { construirModelo, TOTAL_MUNICIPIOS_BA } from "../src/lib/consultas";
+import { FAIXAS_COBERTURA, faixaCobertura } from "../src/lib/faixas";
 import { Dataset } from "../src/lib/tipos";
 import bruto from "../src/dados/dataset.json";
 
@@ -14,8 +15,8 @@ describe("construirModelo com os dados reais da base", () => {
     // únicos números cravados da suíte, e é de propósito: se a ingestão passar
     // a divergir da conferência da própria base, este teste tem que quebrar.
     expect(est.equipeTotal).toBe(262);
-    expect(est.respostas).toBe(49);
-    expect(fed.respostas).toBe(44);
+    expect(est.respostas).toBe(186);
+    expect(fed.respostas).toBe(185);
   });
 
   it("fecha equipe com município + sem município", () => {
@@ -30,10 +31,17 @@ describe("construirModelo com os dados reais da base", () => {
 
   it("conta municípios com dados dentro do total do estado", () => {
     expect(est.comDados.length).toBeLessThanOrEqual(TOTAL_MUNICIPIOS_BA);
-    expect(est.comDados.map((l) => l.nome).sort()).toEqual([
-      "Salvador",
-      "Vitória da Conquista",
-    ]);
+    // Lista derivada do dataset, pelo mesmo motivo já registrado na
+    // concentração e na cobertura: cravada, ela quebra a cada município novo
+    // que responde — o que é a base cumprindo seu papel, não defeito. O que
+    // este teste garante é a definição de "com dados": município da Bahia com
+    // pelo menos uma resposta, e nenhum de fora da malha atravessando.
+    const esperados = dataset.municipios
+      .filter((m) => !m.foraDaMalha && m.respostas.estadual > 0)
+      .map((m) => m.nome)
+      .sort();
+    expect(est.comDados.map((l) => l.nome).sort()).toEqual(esperados);
+    expect(est.comDados.every((l) => !l.foraDaMalha && l.respostas > 0)).toBe(true);
   });
 
   it("mede concentração no município líder", () => {
@@ -71,7 +79,15 @@ describe("construirModelo com os dados reais da base", () => {
     );
     expect(est.coberturaPontos).toBeGreaterThan(1);
     expect(est.coberturaPontos).toBeLessThan(100);
-    expect(est.rotuloCobertura).toBe("Muito baixa");
+    // O rótulo sai da mesma escala, e cravá-lo prendia o teste ao recorte da
+    // planilha: em 29/08 a cobertura era "Muito baixa" e hoje é outra faixa,
+    // sem defeito nenhum no meio. O que denuncia fração trocada por pontos é a
+    // comparação — fração abaixo de 1 cai sempre em "Sem cobertura", enquanto
+    // os pontos caem na faixa real.
+    expect(FAIXAS_COBERTURA.map((f) => f.rotulo)).toContain(est.rotuloCobertura);
+    expect(est.rotuloCobertura).not.toBe(
+      faixaCobertura(dataset.totais.cobertura.estadual),
+    );
   });
 
   it("não vaza nome de pessoa no modelo", () => {
